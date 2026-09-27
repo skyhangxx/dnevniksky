@@ -242,6 +242,7 @@ input.field.num-field{width:88px;flex:0 0 88px;text-align:center}
 <div id="app" class="app"></div>
 <div id="sheet-root"></div>
 <div id="toast-root"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
 <script>
 (() => {
 'use strict';
@@ -255,6 +256,12 @@ const MAX_PERIOD = 10;
 const DEFAULT_BELLS = {dayStart:'08:00', lessonLen:40, breakLen:10};
 const DEFAULT_PREFS = {theme:'system', remind:false, remindTime:'19:00'};
 const THEME_KEY = 'dnevnik-dz-theme';
+/* Supabase project. The publishable key is meant to live in the page:
+   access is enforced by row-level security in supabase/schema.sql. */
+const SUPABASE_URL = 'https://qurtrwgsdjjywngxuczg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_2OGUOvltXc5Mg6Mcbb8ZRg_Cuj3c0sj';
+const EMAIL_DOMAIN = 'dnevnik-dz.example';
+const PHOTO_BUCKET = 'photos';
 
 /* ---------- icons ---------- */
 const I = {
@@ -324,7 +331,7 @@ function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 const state = {subjects:[], lessons:[], homeworks:[], done:{}, plan:{}, settings:{...DEFAULT_PREFS, ...DEFAULT_BELLS}};
 const hasSchedule = () => state.lessons.length > 0;
 const isDone = h => !!state.done[h.id];
-const store = {ready:false, authed:false, offline:false, me:null, isAdmin:false, users:{}, lan:[]};
+const store = {ready:false, authed:false, offline:false, setupError:null, me:null, uid:null, email:null, isAdmin:false, users:{}, invite:''};
 const pendingText = new Map();
 const ui = {tab:'today', page:null, sheet:null, weekStart:null, calSel:null, authMode:'login', authName:'', authError:null, authBusy:false};
 
@@ -344,82 +351,175 @@ function applyPrefs(p) {
   if (!p) return;
   for (const k of Object.keys(DEFAULT_PREFS)) if (p[k] !== undefined) state.settings[k] = p[k];
 }
-function applyServerState(d) {
-  store.me = d.me; store.isAdmin = !!d.me?.admin; store.users = d.users || {}; store.lan = d.lan || [];
-  applySchedule(d.schedule);
-  state.homeworks = (d.homeworks || []).map(h => {
-    const x = normHw(h);
-    if (pendingText.has(x.id)) x.text = pendingText.get(x.id);
-    return x;
-  });
-  applyPrefs(d.prefs);
+/* ---------- Supabase ---------- */
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:false}
+}) : null;
+const offlineMsg = 'Нет связи с сервером. Проверь интернет и обнови страницу.';
+function errText(e, fallback) {
+  if (e?.userMessage) return e.userMessage;
+  const m = String(e?.message || '');
+  if (e instanceof TypeError || /Failed to fetch|NetworkError|Load failed/i.test(m)) return offlineMsg;
+  if (/DNEVNIK_NOT_ADMIN/.test(m)) return 'Это может сделать только администратор дневника.';
+  if (/row-level security|permission denied/i.test(m)) return 'Нет прав на это действие.';
+  return fallback;
 }
-
-/* ---------- server API ---------- */
-async function api(method, url, body) {
-  const opts = {method, credentials:'same-origin', headers:{}};
-  if (body !== undefined) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
-  const res = await fetch(url, opts);
-  let data = null;
-  try { data = await res.json(); } catch (e) {}
-  if (res.status === 401 && !/\/api\/(login|register)$/.test(url)) {
-    store.authed = false; store.ready = true; closeLive(); ui.sheet = null; renderSheet(); render();
-  }
-  if (!res.ok) throw Object.assign(new Error(data?.error || 'HTTP ' + res.status), {status:res.status, userMessage:data?.error});
-  return data;
+async function run(p) { const {data, error} = await p; if (error) throw error; return data; }
+function dataURLtoBlob(u) {
+  const [head, b64] = u.split(',');
+  const bin = atob(b64), arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], {type:(head.match(/data:([^;]+)/) || [])[1] || 'image/jpeg'});
 }
-const offlineMsg = 'Нет связи с сервером. Проверь, что он запущен на компьютере.';
-function errText(e, fallback) { return e?.userMessage || (e instanceof TypeError ? offlineMsg : fallback); }
+/* Supabase signs people in by email, so each name maps to a stable
+   technical address. Nobody sees it and no mail is ever sent to it. */
+async function nameToEmail(name) {
+  const n = String(name).trim().replace(/\s+/g, ' ').toLowerCase();
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(n));
+  return 'u' + [...new Uint8Array(buf)].slice(0, 16).map(b => b.toString(16).padStart(2, '0')).join('') + '@' + EMAIL_DOMAIN;
+}
 
 /* One request at a time per record, so edits arrive in order. */
 const chains = new Map();
 function queue(key, fn) {
   const next = (chains.get(key) || Promise.resolve()).then(fn).catch(e => {
-    if (e?.status !== 401) showToast(errText(e, 'Не удалось сохранить.'));
+    showToast(errText(e, 'Не удалось сохранить.'));
     refresh();
     return 'failed';
   });
   chains.set(key, next);
   return next;
 }
-const saveSchedule = () => { const b = clone(scheduleBody()); return queue('schedule', () => api('PUT', '/api/schedule', b)); };
-const saveHw = h => { const b = clone(hwBody(h)); return queue('hw:' + h.id, () => api('PUT', '/api/homeworks/' + h.id, b)); };
-const removeHwDoc = id => queue('hw:' + id, () => api('DELETE', '/api/homeworks/' + id));
+const nowIso = () => new Date().toISOString();
+const saveSchedule = () => {
+  const b = clone(scheduleBody());
+  return queue('schedule', () => run(sb.from('class_schedule').update({data:b, updated_at:nowIso()}).eq('id', 1)));
+};
+const saveHw = h => {
+  const row = {id:h.id, subject_id:h.subjectId, due:h.due, text:h.text || '', photos:h.photos || []};
+  return queue('hw:' + h.id, () => run(sb.from('homeworks').upsert(row)));
+};
+const removeHwDoc = (id, photos) => queue('hw:' + id, async () => {
+  await run(sb.from('homeworks').delete().eq('id', id));
+  if (photos?.length) await removePhotos(photos);
+});
 function savePrefs() {
   lsSet(THEME_KEY, state.settings.theme);
   const b = clone(prefsBody());
-  return queue('prefs', () => api('PUT', '/api/prefs', b));
+  return queue('prefs', () => run(sb.from('prefs').upsert({user_id:store.uid, data:b, updated_at:nowIso()})));
 }
-async function savePhoto(id, data) { return (await queue('photo:' + id, () => api('POST', '/api/photos', {id, data}))) !== 'failed'; }
-const photoUrl = id => '/api/photos/' + encodeURIComponent(id);
+async function savePhoto(id, dataUrl) {
+  const r = await queue('photo:' + id, () => run(sb.storage.from(PHOTO_BUCKET).upload(id + '.jpg', dataURLtoBlob(dataUrl), {contentType:'image/jpeg', upsert:true})));
+  return r !== 'failed';
+}
+async function removePhotos(ids) {
+  for (let i = 0; i < ids.length; i += 100) {
+    try { await sb.storage.from(PHOTO_BUCKET).remove(ids.slice(i, i + 100).map(id => id + '.jpg')); } catch (e) {}
+  }
+  ids.forEach(id => photoUrls.delete(id));
+}
+
+/* Photos are private: the page asks for links that expire after an hour. */
+const photoUrls = new Map();
+async function signPhotos(ids) {
+  const now = Date.now();
+  const need = [...new Set(ids)].filter(id => !(photoUrls.get(id)?.exp > now + 60000));
+  if (need.length) {
+    try {
+      const res = await run(sb.storage.from(PHOTO_BUCKET).createSignedUrls(need.map(id => id + '.jpg'), 3600));
+      res.forEach((r, i) => { if (r.signedUrl) photoUrls.set(need[i], {url:r.signedUrl, exp:now + 3600000}); });
+    } catch (e) {}
+  }
+  return ids.map(id => photoUrls.get(id)?.url || null);
+}
+async function hydratePhotos(root) {
+  const imgs = [...root.querySelectorAll('img[data-photo]')];
+  if (!imgs.length) return;
+  const urls = await signPhotos(imgs.map(i => i.dataset.photo));
+  imgs.forEach((img, i) => { if (urls[i]) img.src = urls[i]; });
+}
+
+function rowToHw(r) {
+  const x = normHw({id:r.id, subjectId:r.subject_id, due:r.due, text:r.text, photos:r.photos || [], author:r.author, createdAt:r.created_at});
+  if (pendingText.has(x.id)) x.text = pendingText.get(x.id);
+  return x;
+}
+function isMissingSchema(e) {
+  const m = String(e?.message || '');
+  return e?.code === 'PGRST205' || e?.code === '42P01' || /does not exist|Could not find the table|schema cache/i.test(m);
+}
 
 let refreshing = false, refreshAgain = false;
 async function refresh() {
+  if (!sb) { store.ready = true; store.setupError = 'Не загрузилась библиотека Supabase. Проверь интернет и обнови страницу.'; render(); return; }
   if (refreshing) { refreshAgain = true; return; }
   refreshing = true;
   try {
-    const d = await api('GET', '/api/state');
-    applyServerState(d);
-    store.authed = true; store.offline = false;
-    connectLive();
+    const {data:{session}} = await sb.auth.getSession();
+    if (!session) {
+      store.authed = false; closeLive();
+    } else {
+      store.uid = session.user.id; store.email = session.user.email;
+      const [sched, hws, profs, pref] = await Promise.all([
+        run(sb.from('class_schedule').select('data').eq('id', 1).maybeSingle()),
+        run(sb.from('homeworks').select('*').order('due')),
+        run(sb.from('profiles').select('id,name,is_admin')),
+        run(sb.from('prefs').select('data').eq('user_id', store.uid).maybeSingle())
+      ]);
+      const me = profs.find(p => p.id === store.uid);
+      if (!me) {
+        await sb.auth.signOut();
+        store.authed = false;
+        ui.authError = 'Учётная запись создана до настройки базы. Зарегистрируйся заново под другим именем.';
+      } else {
+        store.me = {id:me.id, name:me.name, admin:me.is_admin}; store.isAdmin = !!me.is_admin;
+        store.users = Object.fromEntries(profs.map(p => [p.id, p.name]));
+        applySchedule(sched?.data || {});
+        state.homeworks = hws.map(rowToHw);
+        applyPrefs(pref?.data || null);
+        if (store.isAdmin) {
+          const cfg = await run(sb.from('app_config').select('invite_code').eq('id', 1).maybeSingle());
+          store.invite = cfg?.invite_code || '';
+        }
+        store.authed = true; store.offline = false; store.setupError = null;
+        connectLive();
+      }
+    }
   } catch (e) {
-    if (e instanceof TypeError) store.offline = true;
+    if (isMissingSchema(e)) store.setupError = 'В Supabase ещё не созданы таблицы. Выполни файл supabase/schema.sql в SQL Editor и обнови страницу.';
+    else if (errText(e, '') === offlineMsg) store.offline = true;
+    else showToast(errText(e, 'Не удалось загрузить дневник.'));
   }
   store.ready = true; refreshing = false;
   applyTheme(); rerender();
   if (refreshAgain) { refreshAgain = false; refresh(); }
 }
 
-/* Live updates: the server pings every open page when anything changes. */
+/* Live updates: Supabase Realtime notifies every open page about changes. */
 let live = null, liveTimer = null;
 function connectLive() {
-  if (live || typeof EventSource === 'undefined') return;
-  live = new EventSource('/api/events');
-  live.addEventListener('change', () => { clearTimeout(liveTimer); liveTimer = setTimeout(refresh, 200); });
-  live.onopen = () => { if (store.offline) refresh(); };
-  live.onerror = () => { store.offline = true; };
+  if (live) return;
+  const ping = () => { clearTimeout(liveTimer); liveTimer = setTimeout(refresh, 250); };
+  live = sb.channel('dnevnik-live')
+    .on('postgres_changes', {event:'*', schema:'public', table:'homeworks'}, ping)
+    .on('postgres_changes', {event:'*', schema:'public', table:'class_schedule'}, ping)
+    .on('postgres_changes', {event:'*', schema:'public', table:'profiles'}, ping)
+    .subscribe(status => { if (status === 'SUBSCRIBED' && store.offline) refresh(); });
 }
-function closeLive() { if (live) { live.close(); live = null; } }
+function closeLive() { if (live) { sb.removeChannel(live); live = null; } }
+document.addEventListener('visibilitychange', () => { if (!document.hidden && store.authed) refresh(); });
+function authErrText(e, reg) {
+  if (e?.userMessage) return e.userMessage;
+  const m = String(e?.message || ''), c = e?.code || '';
+  if (c === 'user_already_exists' || /already registered/i.test(m)) return 'Это имя уже занято. Придумай другое или войди.';
+  if (c === 'invalid_credentials' || /Invalid login credentials/i.test(m)) return 'Неверное имя или пароль.';
+  if (c === 'weak_password' || /Password should/i.test(m)) return 'Пароль должен быть не короче 6 символов.';
+  if (/rate limit/i.test(m) || c === 'over_request_rate_limit' || c === 'over_email_send_rate_limit') return 'Слишком много попыток. Подожди немного и попробуй снова.';
+  if (c === 'signup_disabled' || /Signups not allowed/i.test(m)) return 'Регистрация выключена в настройках Supabase.';
+  if (c === 'email_address_invalid' || /Email address .* is invalid/i.test(m)) return 'Supabase не принял регистрацию. Сообщи администратору дневника.';
+  if (reg && (c === 'unexpected_failure' || /Database error saving new user/i.test(m))) return 'Неверный код класса. Спроси его у администратора дневника.';
+  return errText(e, reg ? 'Не получилось зарегистрироваться.' : 'Не получилось войти.');
+}
 
 /* ---------- domain: schedule ---------- */
 const subjectById = id => state.subjects.find(s => s.id === id);
@@ -505,8 +605,9 @@ function toggleDone(id) {
   showToast(isDone(h) ? 'Выполнено' : 'Отметка снята');
 }
 function deleteHomework(id) {
+  const photos = hwById(id)?.photos || [];
   state.homeworks = state.homeworks.filter(x => x.id !== id);
-  removeHwDoc(id);
+  removeHwDoc(id, photos);
   if (state.done[id]) { delete state.done[id]; savePrefs(); }
 }
 function deleteSubject(id) {
@@ -661,7 +762,8 @@ function screenAuth() {
     '<form id="auth-form" class="stack" novalidate>' +
       '<label class="field-label" for="auth-name">Имя</label><input class="field" id="auth-name" name="username" autocomplete="username" maxlength="40" value="' + esc(ui.authName) + '" placeholder="Например, Ильназ">' +
       '<label class="field-label" for="auth-pass">Пароль</label><input class="field" id="auth-pass" type="password" autocomplete="' + (reg ? 'new-password' : 'current-password') + '"' + (reg ? ' placeholder="Не короче 6 символов"' : '') + '>' +
-      (reg ? '<label class="field-label" for="auth-pass2">Повтори пароль</label><input class="field" id="auth-pass2" type="password" autocomplete="new-password">' : '') +
+      (reg ? '<label class="field-label" for="auth-pass2">Повтори пароль</label><input class="field" id="auth-pass2" type="password" autocomplete="new-password">' +
+        '<label class="field-label" for="auth-invite">Код класса</label><input class="field" id="auth-invite" autocomplete="off" maxlength="40" placeholder="Если администратор его задал">' : '') +
       (ui.authError ? '<p class="err" style="margin:0" role="alert">' + esc(ui.authError) + '</p>' : '') +
       '<button class="btn" type="submit"' + (ui.authBusy ? ' disabled' : '') + '>' + (ui.authBusy ? 'Подожди…' : reg ? 'Зарегистрироваться' : 'Войти') + '</button>' +
     '</form>' +
@@ -805,11 +907,17 @@ function screenSettings() {
     '<div class="row" style="align-items:center"><span style="color:var(--accent)">' + I.user + '</span><span class="row-main"><span style="font-weight:600">' + esc(store.me?.name || '') + '</span><span class="muted" style="font-size:13px">' + (admin ? 'Администратор дневника' : 'Ученик') + '</span></span><button class="link" data-act="logout">Выйти</button></div>' +
     '<button class="row action-row" data-act="change-pass">' + I.key + '<span class="row-main">Сменить пароль</span><span class="chev">' + I.chev + '</span></button>' +
     (admin ? '<button class="row action-row" data-act="page" data-page="class">' + I.people + '<span class="row-main">Ученики и сброс паролей</span><span class="chev">' + I.chev + '</span></button>' : '') +
+    '<button class="row action-row danger" data-act="delete-account">' + I.trash + '<span class="row-main">Удалить мою учётную запись</span></button>' +
     '</div></section>';
 
-  out += '<section class="section"><div class="section-title"><h2>Открыть с телефона</h2></div><div class="list"><div class="row">' + '<span style="color:var(--accent)">' + I.phone + '</span><div class="row-main">' +
-    (store.lan.length ? store.lan.map(u => '<span class="time" style="font-weight:600;user-select:all">' + esc(u) + '</span>').join('') : '<span>Компьютер с сервером не подключён к сети.</span>') +
-    '<span class="muted" style="font-size:14px">Телефон должен быть в той же Wi-Fi сети, а компьютер с сервером — включён. Каждый регистрируется под своим именем.</span></div></div></div></section>';
+  const pageLink = /^https?:$/.test(location.protocol) ? location.origin + location.pathname : '';
+  out += '<section class="section"><div class="section-title"><h2>Пригласить класс</h2></div><div class="list"><div class="row">' + '<span style="color:var(--accent)">' + I.phone + '</span><div class="row-main">' +
+    (pageLink ? '<span class="time" style="font-weight:600;user-select:all;overflow-wrap:anywhere">' + esc(pageLink) + '</span><span class="muted" style="font-size:14px">Отправь эту ссылку одноклассникам. Каждый регистрируется под своим именем' + (store.invite ? ' и вводит код класса.' : '.') + '</span>'
+      : '<span>Сейчас дневник открыт как файл. Чтобы открыть его с телефона, выложи его на GitHub Pages.</span>') +
+    '</div></div>' +
+    (admin ? '<div class="row" style="align-items:center;flex-wrap:wrap"><label for="invite-code" class="row-main" style="font-weight:500">Код класса<span class="muted" style="font-size:13px;font-weight:400">Без кода зарегистрироваться сможет любой, у кого есть ссылка</span></label>' +
+      '<div style="display:flex;gap:8px;align-items:center"><input class="field" id="invite-code" style="width:130px" maxlength="40" value="' + esc(store.invite) + '" placeholder="нет" autocomplete="off"><button class="link" data-act="save-invite">Сохранить</button></div></div>' : '') +
+    '</div></section>';
 
   out += '<section class="section"><div class="section-title"><h2>Расписание</h2></div><div class="list"><button class="row action-row" data-act="goto-schedule">' + I.list + '<span class="row-main">Изменить расписание</span><span class="chev">' + I.chev + '</span></button></div></section>';
 
@@ -844,7 +952,10 @@ function screenLoading() {
   return '<div class="hero"><h1>Дневник ДЗ</h1><p style="display:flex;gap:10px;align-items:center"><span class="spinner"></span>Загружаю дневник…</p></div>';
 }
 function screenOffline() {
-  return '<div class="hero"><h1>Нет связи с сервером</h1><p>Проверь, что на компьютере запущен сервер дневника (команда npm start в папке проекта), и обнови страницу.</p></div><button class="btn" data-act="retry">Попробовать снова</button>';
+  return '<div class="hero"><h1>Нет связи с сервером</h1><p>Проверь интернет и обнови страницу.</p></div><button class="btn" data-act="retry">Попробовать снова</button>';
+}
+function screenSetup() {
+  return '<div class="hero"><h1>Дневник ещё не настроен</h1><p>' + esc(store.setupError) + '</p></div><button class="btn" data-act="retry">Проверить снова</button>';
 }
 function screenOnboarding() {
   return '<div class="hero"><h1>Добро пожаловать</h1><p>Добавь школьное расписание, и дневник будет сам понимать, когда следующий урок.</p></div>' +
@@ -866,6 +977,7 @@ function render() {
   let html, tabs = true;
   const p = ui.page;
   if (!store.ready) { html = screenLoading(); tabs = false; }
+  else if (store.setupError) { html = screenSetup(); tabs = false; }
   else if (!store.authed && store.offline) { html = screenOffline(); tabs = false; }
   else if (!store.authed) { html = screenAuth(); tabs = false; }
   else if (p?.name === 'review') { html = pageReview(); tabs = hasSchedule(); }
@@ -968,7 +1080,7 @@ function renderSheet() {
       '<div class="row" style="align-items:center"><label for="detail-due" class="row-main" style="font-weight:500">Срок сдачи</label><input type="date" class="field" style="width:auto" id="detail-due" data-hw-due="' + h.id + '" value="' + h.due + '"></div></div>' +
       '<div class="section" style="margin:0"><div class="section-title"><h2>Что задано</h2><span class="aside" id="saved-note">' + esc(by) + '</span></div><textarea class="field" data-hw-text="' + h.id + '">' + esc(h.text) + '</textarea></div>' + planSec +
       '<div class="section" style="margin:0"><div class="section-title"><h2>Фотографии</h2></div><div class="photos">' +
-        (h.photos || []).map(pid => '<div class="ph"><img src="' + photoUrl(pid) + '" alt="Фото задания" loading="lazy"><button class="open" data-act="view-photo" data-pid="' + esc(pid) + '" aria-label="Открыть фото"></button><button class="x" data-act="hw-photo-del" data-pid="' + esc(pid) + '" aria-label="Удалить фото">' + I.x + '</button></div>').join('') +
+        (h.photos || []).map(pid => '<div class="ph"><img data-photo="' + esc(pid) + '" alt="Фото задания"><button class="open" data-act="view-photo" data-pid="' + esc(pid) + '" aria-label="Открыть фото"></button><button class="x" data-act="hw-photo-del" data-pid="' + esc(pid) + '" aria-label="Удалить фото">' + I.x + '</button></div>').join('') +
         '<label class="add-tile">' + I.camera + 'Камера<input type="file" accept="image/*" capture="environment" data-file="hw-photo"></label>' +
         '<label class="add-tile">' + I.image + 'Галерея<input type="file" accept="image/*" multiple data-file="hw-photo"></label>' +
       '</div>' + (s.loading ? '<p class="muted" style="display:flex;gap:8px;align-items:center;margin:0"><span class="spinner"></span>Добавляю фото…</p>' : '') + '</div>' +
@@ -991,19 +1103,23 @@ function renderSheet() {
       (s.error ? '<p class="err" style="margin:0" role="alert">' + esc(s.error) + '</p>' : '') +
       '<button class="btn" type="submit"' + (s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Сохраняю…' : 'Сменить пароль') + '</button></form>', '<button class="link l" data-act="close">Отмена</button>');
   } else if (s.type === 'photo') {
-    html = sheetFrame('Фото', '<img class="big-photo" src="' + photoUrl(s.pid) + '" alt="Фото задания">', '<span></span>', '<button class="link" data-act="close">Закрыть</button>');
+    html = sheetFrame('Фото', '<img class="big-photo" data-photo="' + esc(s.pid) + '" alt="Фото задания">', '<span></span>', '<button class="link" data-act="close">Закрыть</button>');
   }
   const scrollTop = sheetRoot.querySelector('.sheet-body')?.scrollTop || 0;
   sheetRoot.innerHTML = html;
   const bodyEl = sheetRoot.querySelector('.sheet-body'); if (bodyEl) bodyEl.scrollTop = scrollTop;
+  hydratePhotos(sheetRoot);
 }
 
 /* ---------- export / import ---------- */
 async function exportData() {
   showToast('Готовлю файл…');
   const photos = {};
-  for (const h of state.homeworks) for (const pid of h.photos || []) {
-    try { const r = await fetch(photoUrl(pid)); if (r.ok) photos[pid] = await readAsDataURL(await r.blob()); } catch (e) {}
+  const ids = state.homeworks.flatMap(h => h.photos || []);
+  const urls = await signPhotos(ids);
+  for (let i = 0; i < ids.length; i++) {
+    if (!urls[i]) continue;
+    try { const r = await fetch(urls[i]); if (r.ok) photos[ids[i]] = await readAsDataURL(await r.blob()); } catch (e) {}
   }
   const json = JSON.stringify({format:'dnevnik-dz-backup', version:3, exportedAt:new Date().toISOString(),
     schedule:scheduleBody(), homeworks:state.homeworks.map(h => ({id:h.id, createdAt:h.createdAt, author:h.author, ...hwBody(h)})), photos}, null, 2);
@@ -1022,10 +1138,24 @@ async function importFile(file) {
   const n = homeworks.length;
   openSheet({type:'confirm', title:'Импорт данных', text:'Расписание и задания всего класса заменятся данными из файла (' + n + ' ' + plural(n, 'задание', 'задания', 'заданий') + ').', label:'Заменить данные', fn:async () => {
     try {
-      const r = await api('POST', '/api/admin/import', {schedule, homeworks, photos:obj.photos || {}});
-      showToast('Импортировано заданий: ' + r.homeworks);
+      showToast('Импортирую…');
+      const oldPhotos = state.homeworks.flatMap(h => h.photos || []);
+      await run(sb.rpc('admin_wipe'));
+      await removePhotos(oldPhotos);
+      applySchedule(schedule);
+      await run(sb.from('class_schedule').update({data:clone(scheduleBody()), updated_at:nowIso()}).eq('id', 1));
+      for (const [pid, d] of Object.entries(obj.photos || {})) {
+        if (/^[A-Za-z0-9_-]{4,40}$/.test(pid) && /^data:image\/jpeg;base64,/.test(d)) {
+          await run(sb.storage.from(PHOTO_BUCKET).upload(pid + '.jpg', dataURLtoBlob(d), {contentType:'image/jpeg', upsert:true}));
+        }
+      }
+      const rows = homeworks
+        .map(h => ({id:/^[A-Za-z0-9_-]{4,40}$/.test(h.id) ? h.id : uid(), subject_id:h.subjectId, due:h.due, text:String(h.text || '').slice(0, 4000), photos:h.photos || []}))
+        .filter(r => r.subject_id && /^\d{4}-\d{2}-\d{2}$/.test(r.due));
+      for (let i = 0; i < rows.length; i += 200) await run(sb.from('homeworks').insert(rows.slice(i, i + 200)));
+      showToast('Импортировано заданий: ' + rows.length);
       ui.page = null; ui.tab = 'today'; refresh();
-    } catch (e) { showToast(errText(e, 'Не удалось импортировать.')); }
+    } catch (e) { showToast(errText(e, 'Не удалось импортировать.')); refresh(); }
   }});
 }
 
@@ -1058,20 +1188,39 @@ const actions = {
     if (p?.name === 'class') ui.tab = 'settings';
     goPage(null);
   },
-  retry: () => { store.ready = false; render(); refresh(); },
+  retry: () => { store.ready = false; store.setupError = null; store.offline = false; render(); refresh(); },
   'auth-mode': el => { ui.authMode = el.dataset.mode; ui.authError = null; ui.authName = document.getElementById('auth-name')?.value || ui.authName; render(); document.getElementById('auth-name')?.focus(); },
   logout: async () => {
-    try { await api('POST', '/api/logout'); } catch (e) {}
-    closeLive(); store.authed = false; store.me = null; ui.page = null; ui.tab = 'today'; ui.authMode = 'login'; ui.authError = null;
-    state.done = {}; render();
+    closeLive();
+    try { await sb.auth.signOut(); } catch (e) {}
+    store.authed = false; store.me = null; store.isAdmin = false; store.invite = ''; ui.page = null; ui.tab = 'today'; ui.authMode = 'login'; ui.authError = null;
+    state.done = {}; state.plan = {}; render();
   },
   'change-pass': () => openSheet({type:'password'}),
+  'save-invite': async () => {
+    const code = (document.getElementById('invite-code')?.value || '').trim();
+    try {
+      await run(sb.rpc('admin_set_invite', {p_code:code}));
+      store.invite = code; render();
+      showToast(code ? 'Код класса сохранён' : 'Код класса убран: регистрироваться может любой со ссылкой');
+    } catch (e) { showToast(errText(e, 'Не удалось сохранить код.')); }
+  },
+  'delete-account': () => openSheet({type:'confirm', title:'Удалить учётную запись', text:'Твоя учётная запись и личные отметки удалятся. Задания, которые ты записал, останутся у класса без подписи.' + (store.isAdmin ? ' Ты администратор: после удаления у дневника не останется администратора.' : ''), label:'Удалить учётную запись', fn:async () => {
+    try {
+      await run(sb.rpc('delete_my_account'));
+      closeLive();
+      try { await sb.auth.signOut({scope:'local'}); } catch (e) {}
+      store.authed = false; store.me = null; store.isAdmin = false; ui.page = null; ui.tab = 'today'; ui.authMode = 'register';
+      state.done = {}; state.plan = {}; render();
+      showToast('Учётная запись удалена');
+    } catch (e) { showToast(errText(e, 'Не удалось удалить учётную запись.')); }
+  }}),
   'reset-pass': el => {
     const id = el.dataset.id, name = store.users[id];
     openSheet({type:'confirm', title:'Сбросить пароль', text:'Ученик «' + name + '» получит новый временный пароль, старый перестанет работать.', label:'Сбросить', fn:async () => {
       try {
-        const r = await api('POST', '/api/admin/reset', {userId:id});
-        openSheet({type:'info', title:'Новый пароль', html:'<p style="margin:0">Временный пароль для «' + esc(name) + '»:</p><p style="margin:0;font-family:var(--display);font-size:32px;letter-spacing:.12em;user-select:all" class="time">' + esc(r.password) + '</p><p class="muted" style="margin:0">Передай его ученику. После входа он сможет сменить пароль в настройках.</p>'});
+        const password = await run(sb.rpc('admin_reset_password', {p_user:id}));
+        openSheet({type:'info', title:'Новый пароль', html:'<p style="margin:0">Временный пароль для «' + esc(name) + '»:</p><p style="margin:0;font-family:var(--display);font-size:32px;letter-spacing:.12em;user-select:all" class="time">' + esc(password) + '</p><p class="muted" style="margin:0">Передай его ученику. После входа он сможет сменить пароль в настройках.</p>'});
       } catch (e) { showToast(errText(e, 'Не удалось сбросить пароль.')); }
     }});
   },
@@ -1135,7 +1284,7 @@ const actions = {
   'hw-delete': () => { ui.sheet.confirmDelete = true; renderSheet(); },
   'hw-delete-no': () => { ui.sheet.confirmDelete = false; renderSheet(); },
   'hw-delete-yes': () => { deleteHomework(ui.sheet.id); closeSheet(); render(); showToast('Задание удалено'); },
-  'hw-photo-del': el => { const h = hwById(ui.sheet.id); if (!h) return; h.photos = h.photos.filter(p => p !== el.dataset.pid); saveHw(h); renderSheet(); render(); },
+  'hw-photo-del': el => { const h = hwById(ui.sheet.id); if (!h) return; const pid = el.dataset.pid; h.photos = h.photos.filter(p => p !== pid); saveHw(h).then(r => { if (r !== 'failed') removePhotos([pid]); }); renderSheet(); render(); },
   'view-photo': el => openSheet({type:'photo', pid:el.dataset.pid, back:ui.sheet}),
   'confirm-yes': async () => { const fn = ui.sheet.fn; closeSheet(); await fn(); },
   // settings
@@ -1150,11 +1299,20 @@ const actions = {
     const n = state.homeworks.filter(h => h.due < before).length;
     if (!n) { showToast('Заданий старше месяца нет'); return; }
     openSheet({type:'confirm', title:'Удалить старые задания', text:'Удалятся ' + n + ' ' + plural(n, 'задание', 'задания', 'заданий') + ', срок которых прошёл больше месяца назад. У всего класса.', label:'Удалить', fn:async () => {
-      try { await api('POST', '/api/admin/clear-old', {before}); showToast('Старые задания удалены'); refresh(); } catch (e) { showToast(errText(e, 'Не удалось удалить.')); }
+      try {
+        const photos = await run(sb.rpc('admin_clear_old', {p_before:before}));
+        await removePhotos(photos || []);
+        showToast('Старые задания удалены'); refresh();
+      } catch (e) { showToast(errText(e, 'Не удалось удалить.')); }
     }});
   },
   wipe: () => openSheet({type:'confirm', title:'Удалить все данные', text:'Удалятся расписание, предметы, все задания и фото у всего класса. Учётные записи останутся. Отменить нельзя.', label:'Удалить всё', fn:async () => {
-    try { await api('POST', '/api/admin/wipe'); ui.page = null; ui.tab = 'today'; showToast('Все данные удалены'); refresh(); } catch (e) { showToast(errText(e, 'Не удалось удалить.')); }
+    try {
+      const photos = state.homeworks.flatMap(h => h.photos || []);
+      await run(sb.rpc('admin_wipe'));
+      await removePhotos(photos);
+      ui.page = null; ui.tab = 'today'; showToast('Все данные удалены'); refresh();
+    } catch (e) { showToast(errText(e, 'Не удалось удалить.')); }
   }})
 };
 
@@ -1186,13 +1344,24 @@ document.addEventListener('submit', async e => {
     if (reg && pass !== document.getElementById('auth-pass2').value) { ui.authError = 'Пароли не совпадают.'; render(); return; }
     ui.authBusy = true; ui.authError = null; render();
     try {
-      await api('POST', reg ? '/api/register' : '/api/login', {name, password:pass});
+      if (!sb) throw {userMessage:'Не загрузилась библиотека Supabase. Проверь интернет и обнови страницу.'};
+      if (reg && pass.length < 6) throw {userMessage:'Пароль должен быть не короче 6 символов.'};
+      const email = await nameToEmail(name);
+      if (reg) {
+        const invite = (document.getElementById('auth-invite')?.value || '').trim();
+        const {data, error} = await sb.auth.signUp({email, password:pass, options:{data:{name:name.replace(/\s+/g, ' '), invite}}});
+        if (error) throw error;
+        if (!data.session) throw {userMessage:'Регистрация прошла, но Supabase ждёт подтверждения почты. Администратору нужно выключить его: Authentication → Sign In / Providers → Email → Confirm email.'};
+      } else {
+        const {error} = await sb.auth.signInWithPassword({email, password:pass});
+        if (error) throw error;
+      }
       ui.authBusy = false; ui.tab = 'today'; ui.page = null;
       await refresh();
-      showToast(reg ? 'Добро пожаловать, ' + name + '!' : 'Привет, ' + (store.me?.name || name) + '!');
+      if (store.authed) showToast(reg ? 'Добро пожаловать, ' + name + '!' : 'Привет, ' + (store.me?.name || name) + '!');
     } catch (err) {
       ui.authBusy = false;
-      ui.authError = errText(err, reg ? 'Не получилось зарегистрироваться.' : 'Не получилось войти.');
+      ui.authError = authErrText(err, reg);
       render();
     }
   } else if (e.target.id === 'pass-form') {
@@ -1201,7 +1370,14 @@ document.addEventListener('submit', async e => {
     const oldPassword = document.getElementById('old-pass').value, newPassword = document.getElementById('new-pass').value;
     if (newPassword !== document.getElementById('new-pass2').value) { s.error = 'Новые пароли не совпадают.'; renderSheet(); return; }
     s.busy = true; s.error = null; renderSheet();
-    try { await api('POST', '/api/password', {oldPassword, newPassword}); closeSheet(); showToast('Пароль изменён'); }
+    try {
+      if (newPassword.length < 6) throw {userMessage:'Новый пароль должен быть не короче 6 символов.'};
+      const check = await sb.auth.signInWithPassword({email:store.email, password:oldPassword});
+      if (check.error) throw {userMessage:check.error.code === 'invalid_credentials' || /Invalid login/i.test(check.error.message) ? 'Старый пароль указан неверно.' : errText(check.error, 'Не удалось проверить старый пароль.')};
+      const {error} = await sb.auth.updateUser({password:newPassword});
+      if (error) throw error.code === 'same_password' ? {userMessage:'Новый пароль совпадает со старым.'} : error;
+      closeSheet(); showToast('Пароль изменён');
+    }
     catch (err) { s.busy = false; s.error = errText(err, 'Не удалось сменить пароль.'); renderSheet(); }
   }
 });
@@ -1271,6 +1447,10 @@ state.settings.theme = lsGet(THEME_KEY) || 'system';
 applyTheme();
 render();
 setInterval(() => { if (store.authed && state.settings.remind && ui.tab === 'today' && !ui.page && !ui.sheet) render(); }, 60000);
+if (sb) sb.auth.onAuthStateChange(event => {
+  // Only update the view here; Supabase calls inside this callback can deadlock.
+  if (event === 'SIGNED_OUT' && store.authed) { store.authed = false; closeLive(); ui.sheet = null; renderSheet(); render(); }
+});
 refresh();
 })();
 </script>
