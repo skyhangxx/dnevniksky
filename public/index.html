@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EEF1F6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1117" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Дневник ДЗ</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%233F6BDB%22%2F%3E%3Crect%20x%3D%2217%22%20y%3D%2212%22%20width%3D%2230%22%20height%3D%2238%22%20rx%3D%224%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2217%22%20y%3D%2212%22%20width%3D%225%22%20height%3D%2238%22%20fill%3D%22%238FA9F0%22%2F%3E%3Cpath%20d%3D%22M27%2022h14M27%2029h14M27%2036h8%22%20stroke%3D%22%23C5D2F5%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2246%22%20r%3D%229%22%20fill%3D%22%232E9E6A%22%2F%3E%3Cpath%20d%3D%22M40.5%2046l3%203%206-6%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.6%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%233F6BDB%22%2F%3E%3Crect%20x%3D%2217%22%20y%3D%2212%22%20width%3D%2230%22%20height%3D%2238%22%20rx%3D%224%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2217%22%20y%3D%2212%22%20width%3D%225%22%20height%3D%2238%22%20fill%3D%22%238FA9F0%22%2F%3E%3Cpath%20d%3D%22M27%2022h14M27%2029h14M27%2036h8%22%20stroke%3D%22%23C5D2F5%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2245%22%20cy%3D%2246%22%20r%3D%229%22%20fill%3D%22%232E9E6A%22%2F%3E%3Cpath%20d%3D%22M40.5%2046l3%203%206-6%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222.6%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.field-label{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:-4px;padding-inline:2px}
+
+:root{
+  --ground:#EEF1F6; --surface:#FFFFFF; --surface-2:#F5F7FA; --ink:#18202E; --muted:#636D80; --faint:#9AA3B3; --line:#E0E5EC;
+  --accent:#2F5BD3; --accent-ink:#FFFFFF; --accent-soft:#E4EBFB;
+  --red:#C23D36; --red-soft:#FBE6E4; --green:#248A5E; --green-soft:#DFF2E8; --amber:#A96E12; --amber-soft:#FBEFD8;
+  --margin:#E7A09E; --scrim:rgba(20,26,38,.42); --shadow:0 -8px 30px rgba(24,32,46,.16);
+  --display:'Unbounded','Onest',system-ui,sans-serif;
+  --body:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1117; --surface:#171B23; --surface-2:#1F242E; --ink:#E8ECF3; --muted:#A0A9B8; --faint:#6D7688; --line:#2A303B;
+    --accent:#7F9FF6; --accent-ink:#0E1117; --accent-soft:#1E2944;
+    --red:#EF8078; --red-soft:#3B201F; --green:#5CC596; --green-soft:#16302A; --amber:#E4B35E; --amber-soft:#352A16;
+    --margin:#6E3B3B; --scrim:rgba(0,0,0,.6); --shadow:0 -8px 30px rgba(0,0,0,.5);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1117; --surface:#171B23; --surface-2:#1F242E; --ink:#E8ECF3; --muted:#A0A9B8; --faint:#6D7688; --line:#2A303B;
+  --accent:#7F9FF6; --accent-ink:#0E1117; --accent-soft:#1E2944;
+  --red:#EF8078; --red-soft:#3B201F; --green:#5CC596; --green-soft:#16302A; --amber:#E4B35E; --amber-soft:#352A16;
+  --margin:#6E3B3B; --scrim:rgba(0,0,0,.6); --shadow:0 -8px 30px rgba(0,0,0,.5);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:calc(14px + env(safe-area-inset-top,0px)) calc(104px + env(safe-area-inset-bottom,0px))}
+.app.no-tabs{padding-block-end:32px}
+
+/* headers */
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:10px 18px}
+.head h1{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.head .sub{color:var(--muted);margin:2px 0 0;font-size:14px}
+.head-actions{display:flex;gap:6px;flex-shrink:0}
+.back{display:inline-flex;align-items:center;gap:4px;background:none;border:0;color:var(--accent);padding:6px 0;font-weight:500}
+
+/* groups */
+.section{display:flex;flex-direction:column;gap:8px;margin-block-end:24px}
+.section-title{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-inline:4px;margin:0}
+.section-title h2{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0}
+.section-title .aside{font-size:13px;color:var(--muted)}
+.list{background:var(--surface);border-radius:14px;overflow:hidden}
+.row{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-top:1px solid var(--line);width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0}
+.row:first-child{border-top:0}
+button.row:hover,.row.tap:hover{background:var(--surface-2)}
+.row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.row-title{display:flex;align-items:center;gap:7px;font-weight:600}
+.row-text{white-space:pre-wrap;overflow-wrap:anywhere}
+.row-text.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;white-space:normal}
+.row-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.muted{color:var(--muted)}.faint{color:var(--faint)}
+.strike{text-decoration:line-through;color:var(--faint)}
+.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.chev{color:var(--faint);align-self:center;flex-shrink:0}
+
+/* diary page: red margin rule like a school дневник */
+.ruled{position:relative}
+.ruled::before{content:"";position:absolute;left:44px;top:0;bottom:0;width:1px;background:var(--margin);pointer-events:none}
+.ruled .row{padding-left:0}
+.num{width:44px;flex-shrink:0;text-align:center;font-family:var(--display);font-weight:500;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:1px}
+.ruled .row-main{padding-left:4px}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.overdue{background:var(--red-soft);color:var(--red)}
+.pill.today{background:var(--amber-soft);color:var(--amber)}
+.pill.tomorrow{background:var(--accent-soft);color:var(--accent)}
+.pill.later{background:var(--surface-2);color:var(--muted)}
+.pill.done{background:var(--green-soft);color:var(--green)}
+
+/* check */
+.check{width:26px;height:26px;border-radius:50%;border:2px solid var(--faint);background:none;flex-shrink:0;display:grid;place-items:center;padding:0;margin-top:-1px;color:transparent;transition:background .15s,border-color .15s}
+.check:hover{border-color:var(--accent)}
+.check.on{background:var(--green);border-color:var(--green);color:#fff}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:13px 16px;font-weight:600;background:var(--accent);color:var(--accent-ink);width:100%;text-align:center}
+.btn:hover{filter:brightness(1.06)}
+.btn.secondary{background:var(--surface);color:var(--accent);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.ghost{background:var(--accent-soft);color:var(--accent)}
+.btn.danger{background:var(--red-soft);color:var(--red)}
+.btn[disabled]{opacity:.45;cursor:default;filter:none}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.btn-row>*{flex:1 1 140px}
+.icon-btn{border:0;background:var(--surface);width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--accent)}
+.icon-btn.plain{background:none}
+.icon-btn:hover{background:var(--surface-2)}
+.link{background:none;border:0;color:var(--accent);font-weight:600;padding:6px 2px}
+.action-row{color:var(--accent);font-weight:500;align-items:center}
+.action-row.danger{color:var(--red)}
+input.field,textarea.field,select.field{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 12px;outline:none}
+input.field:focus,textarea.field:focus{border-color:var(--accent)}
+textarea.field{min-height:130px;resize:vertical}
+.inline-input{flex:1;min-width:0;border:0;background:transparent;padding:0;outline:none;font-weight:500}
+.inline-input::placeholder{color:var(--faint);font-weight:400}
+
+/* banner */
+.banner{display:flex;gap:12px;align-items:flex-start;background:var(--amber-soft);color:var(--ink);border-radius:14px;padding:12px 14px;margin-block-end:20px}
+.banner.info{background:var(--accent-soft)}
+.banner b{display:block;margin-bottom:2px}
+.banner ul{margin:4px 0 0;padding-left:18px}
+
+.empty{padding:22px 14px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-weight:600;margin-bottom:2px}
+
+/* week strip */
+.week{display:flex;align-items:center;gap:4px;background:var(--surface);border-radius:14px;padding:10px 6px;margin-block-end:18px}
+.week-days{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+.wd{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;border-radius:10px}
+.wd small{font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--muted)}
+.wd span{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-variant-numeric:tabular-nums;position:relative}
+.wd.today span{color:var(--accent)}
+.wd.sel span{background:var(--accent);color:var(--accent-ink)}
+.wd i{width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.7}
+.wd i.none{background:transparent}
+.week-label{text-align:center;color:var(--muted);font-size:13px;margin:-8px 0 14px}
+
+/* segmented */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surface-2);border-radius:10px;padding:3px;gap:3px;width:100%}
+.seg button{border:0;background:none;border-radius:8px;padding:8px 4px;font-weight:500;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+
+/* switch */
+.switch{position:relative;width:50px;height:30px;flex-shrink:0}
+.switch input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.switch span{position:absolute;inset:0;border-radius:999px;background:var(--line);transition:background .15s;pointer-events:none}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
+.switch input:checked+span{background:var(--green)}
+.switch input:checked+span::after{transform:translateX(20px)}
+.switch input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+
+/* tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabbar-inner{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 4px 6px}
+.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--faint);font-size:11px;font-weight:500;padding:4px 0}
+.tab.on{color:var(--accent)}
+.tab-add{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted);padding:0}
+.tab-add span{width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;margin-top:-20px;box-shadow:0 6px 16px rgba(47,91,211,.35);border:4px solid var(--surface)}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;animation:fade .18s ease}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:560px;margin:0 auto;background:var(--ground);border-radius:20px 20px 0 0;max-height:calc(92% - env(safe-area-inset-top,0px));display:flex;flex-direction:column;box-shadow:var(--shadow);animation:up .22s cubic-bezier(.2,.8,.2,1)}
+.sheet-head{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:14px 16px 10px}
+.sheet-head h3{margin:0;font-size:16px;font-weight:600;text-align:center}
+.sheet-head .l{justify-self:start}.sheet-head .r{justify-self:end}
+.grabber{width:38px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 0}
+.sheet-body{overflow-y:auto;padding:4px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:18px}
+@keyframes up{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){.sheet,.scrim{animation:none}}
+
+/* photos */
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.ph{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--surface-2);max-width:100%}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph button.open{position:absolute;inset:0;border:0;background:none;padding:0}
+.ph .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;padding:0}
+.add-tile{aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--faint);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-size:12px;cursor:pointer;background:none}
+.add-tile:hover{border-color:var(--accent);color:var(--accent)}
+.add-tile input{display:none}
+.big-photo{width:100%;border-radius:12px;display:block}
+
+/* onboarding */
+.hero{display:flex;flex-direction:column;gap:14px;padding-block:28px 26px}
+.hero h1{font-family:var(--display);font-weight:700;font-size:30px;line-height:1.15;margin:0;text-wrap:balance}
+.hero p{margin:0;color:var(--muted);font-size:16px;max-width:36ch}
+.preview{background:var(--surface);border-radius:14px;overflow:hidden}
+.preview-head{padding:10px 14px;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
+.stack{display:flex;flex-direction:column;gap:10px}
+label.btn{cursor:pointer}
+label.btn input{display:none}
+.spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{color:var(--red);font-size:14px}
+.note{font-size:13px;color:var(--muted);padding-inline:4px}
+
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 16px;border-radius:12px;font-weight:500;z-index:60;max-width:calc(100% - 32px);text-align:center;animation:fade .15s ease}
+.date-options .row{align-items:center}
+.opt-label{font-size:13px;color:var(--muted);font-weight:500}
+.opt-date{font-weight:600}
+.lesson-ctrl{display:flex;gap:2px;flex-shrink:0;align-self:center}
+.lesson-ctrl button{width:32px;height:32px;border:0;border-radius:8px;background:none;color:var(--muted);display:grid;place-items:center;padding:0}
+.lesson-ctrl button:hover:not([disabled]){background:var(--surface-2);color:var(--ink)}
+.lesson-ctrl button[disabled]{opacity:.3;cursor:default}
+.lesson-ctrl button.del:hover{color:var(--red)}
+.time{font-variant-numeric:tabular-nums}
+.room{font-variant-numeric:tabular-nums}
+.row.gap{padding-block:8px}
+.row.gap .row-main{color:var(--faint);font-size:14px}
+.room-input{width:64px;flex-shrink:0;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:5px 7px;font-size:13px;text-align:center;outline:none;font-variant-numeric:tabular-nums}
+.room-input:focus{border-color:var(--accent)}
+.day-range{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.bells{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 16px;padding:12px 14px;font-size:14px;font-variant-numeric:tabular-nums}
+.bells span b{display:inline-block;width:22px;color:var(--muted);font-weight:600}
+.plan-card{background:var(--accent-soft);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px;margin-block-end:24px}
+.plan-head{display:flex;gap:12px;align-items:flex-start}
+.plan-head b{display:block;font-size:16px;margin-bottom:2px}
+.plan-head span{color:var(--muted);font-size:14px}
+.plan-icon{width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex-shrink:0}
+.plan-list{display:flex;flex-direction:column;gap:6px}
+.plan-item{display:flex;flex-direction:column;gap:3px;text-align:left;border:0;background:var(--surface);border-radius:12px;padding:10px 12px;width:100%}
+.plan-item:hover{background:var(--surface-2)}
+.plan-foot{margin:0;font-size:13px;color:var(--muted);padding-inline:2px}
+.plan-chip{display:inline-flex;align-items:center;gap:4px;color:var(--accent);font-weight:500}
+.plan-days{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.plan-day{display:flex;flex-direction:column;gap:2px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:9px 11px}
+.plan-day b{font-weight:600;font-size:14px}
+.plan-day em{font-style:normal;font-size:11px;font-weight:600;color:var(--green);background:var(--green-soft);border-radius:999px;padding:1px 6px;margin-left:2px;white-space:nowrap}
+.plan-day span{font-size:12px;color:var(--muted)}
+.plan-day:hover{border-color:var(--accent)}
+.plan-day.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+input.field.num-field{width:88px;flex:0 0 88px;text-align:center}
+.row>label.row-main{min-width:0}
+.sub-label{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:4px 4px 0;margin:0}
+</style>
+</head>
+<body>
+<div id="app" class="app"></div>
+<div id="sheet-root"></div>
+<div id="toast-root"></div>
+<script>
+(() => {
+'use strict';
+
+/* ---------- constants ---------- */
+const WD_FULL = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const WD_SHORT = ['ВС','ПН','ВТ','СР','ЧТ','ПТ','СБ'];
+const SCHOOL_DAYS = [1,2,3,4,5,6];
+const PALETTE = ['#4A74E0','#2E9E77','#D08A2E','#D0584F','#7B68D8','#2A9DB0','#B0569E','#5E8A3A','#C2703D','#5872B8'];
+const MAX_PERIOD = 10;
+const DEFAULT_BELLS = {dayStart:'08:00', lessonLen:40, breakLen:10};
+const DEFAULT_PREFS = {theme:'system', remind:false, remindTime:'19:00'};
+const THEME_KEY = 'dnevnik-dz-theme';
+
+/* ---------- icons ---------- */
+const I = {
+  sun:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>',
+  cal:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+  list:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><path d="M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01" stroke-width="2.6"/></svg>',
+  gear:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  plus:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  plusSm:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  check:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  checkMd:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  chev:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  left:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  right:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  up:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>',
+  down:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  x:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  trash:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/></svg>',
+  camera:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  image:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16l-5-5-8.5 8.5"/></svg>',
+  pencil:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>',
+  clock:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+  bell:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
+  people:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="17" cy="9.5" r="2.5"/><path d="M16 14.4c2.3.1 4 1.6 4.5 4.1"/></svg>',
+  user:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20c.8-3.6 3.7-5.6 7.5-5.6s6.7 2 7.5 5.6"/></svg>',
+  key:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="14" r="4"/><path d="M11 11l8-8M16 6l3 3M14 8l2 2"/></svg>',
+  phone:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>',
+  photo:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16l-5-5-8.5 8.5"/></svg>'
+};
+
+/* ---------- helpers ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const clone = o => JSON.parse(JSON.stringify(o));
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const today = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+const daysBetween = (a, b) => Math.round((parse(b) - parse(a)) / 86400000);
+const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+const fmtLong = new Intl.DateTimeFormat('ru-RU', {weekday:'long', day:'numeric', month:'long'});
+const fmtDay = new Intl.DateTimeFormat('ru-RU', {day:'numeric', month:'long'});
+const fmtMonth = new Intl.DateTimeFormat('ru-RU', {month:'long', year:'numeric'});
+const longDate = s => cap(fmtLong.format(typeof s === 'string' ? parse(s) : s));
+const shortDate = s => fmtDay.format(typeof s === 'string' ? parse(s) : s);
+function plural(n, one, few, many) {
+  const a = Math.abs(n) % 100, b = a % 10;
+  if (a > 10 && a < 20) return many;
+  if (b === 1) return one;
+  if (b >= 2 && b <= 4) return few;
+  return many;
+}
+function dueStatus(due) {
+  const d = daysBetween(ymd(today()), due);
+  if (d < 0) return {cls:'overdue', label:'Просрочено'};
+  if (d === 0) return {cls:'today', label:'Сегодня'};
+  if (d === 1) return {cls:'tomorrow', label:'Завтра'};
+  return {cls:'later', label:'Через ' + d + ' ' + plural(d, 'день', 'дня', 'дней')};
+}
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+/* ---------- state ----------
+   Shared by the whole class (kept on the server): timetable, bells, homework, photos.
+   Personal to each account: which homework you marked done, theme, reminder. */
+const state = {subjects:[], lessons:[], homeworks:[], done:{}, plan:{}, settings:{...DEFAULT_PREFS, ...DEFAULT_BELLS}};
+const hasSchedule = () => state.lessons.length > 0;
+const isDone = h => !!state.done[h.id];
+const store = {ready:false, authed:false, offline:false, me:null, isAdmin:false, users:{}, lan:[]};
+const pendingText = new Map();
+const ui = {tab:'today', page:null, sheet:null, weekStart:null, calSel:null, authMode:'login', authName:'', authError:null, authBusy:false};
+
+const scheduleBody = () => ({subjects:state.subjects, lessons:state.lessons,
+  bells:{dayStart:state.settings.dayStart, lessonLen:state.settings.lessonLen, breakLen:state.settings.breakLen}});
+const hwBody = h => ({subjectId:h.subjectId, due:h.due, text:h.text || '', photos:h.photos || []});
+const prefsBody = () => ({done:state.done, plan:state.plan, theme:state.settings.theme, remind:state.settings.remind, remindTime:state.settings.remindTime});
+const normHw = h => ({photos:[], text:'', createdAt:'', ...h});
+function applySchedule(d) {
+  state.subjects = Array.isArray(d?.subjects) ? d.subjects : [];
+  state.lessons = Array.isArray(d?.lessons) ? d.lessons.map(l => ({room:'', ...l})) : [];
+  Object.assign(state.settings, DEFAULT_BELLS, d?.bells || {});
+}
+function applyPrefs(p) {
+  state.done = p?.done && typeof p.done === 'object' ? {...p.done} : {};
+  state.plan = p?.plan && typeof p.plan === 'object' ? {...p.plan} : {};
+  if (!p) return;
+  for (const k of Object.keys(DEFAULT_PREFS)) if (p[k] !== undefined) state.settings[k] = p[k];
+}
+function applyServerState(d) {
+  store.me = d.me; store.isAdmin = !!d.me?.admin; store.users = d.users || {}; store.lan = d.lan || [];
+  applySchedule(d.schedule);
+  state.homeworks = (d.homeworks || []).map(h => {
+    const x = normHw(h);
+    if (pendingText.has(x.id)) x.text = pendingText.get(x.id);
+    return x;
+  });
+  applyPrefs(d.prefs);
+}
+
+/* ---------- server API ---------- */
+async function api(method, url, body) {
+  const opts = {method, credentials:'same-origin', headers:{}};
+  if (body !== undefined) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const res = await fetch(url, opts);
+  let data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (res.status === 401 && !/\/api\/(login|register)$/.test(url)) {
+    store.authed = false; store.ready = true; closeLive(); ui.sheet = null; renderSheet(); render();
+  }
+  if (!res.ok) throw Object.assign(new Error(data?.error || 'HTTP ' + res.status), {status:res.status, userMessage:data?.error});
+  return data;
+}
+const offlineMsg = 'Нет связи с сервером. Проверь, что он запущен на компьютере.';
+function errText(e, fallback) { return e?.userMessage || (e instanceof TypeError ? offlineMsg : fallback); }
+
+/* One request at a time per record, so edits arrive in order. */
+const chains = new Map();
+function queue(key, fn) {
+  const next = (chains.get(key) || Promise.resolve()).then(fn).catch(e => {
+    if (e?.status !== 401) showToast(errText(e, 'Не удалось сохранить.'));
+    refresh();
+    return 'failed';
+  });
+  chains.set(key, next);
+  return next;
+}
+const saveSchedule = () => { const b = clone(scheduleBody()); return queue('schedule', () => api('PUT', '/api/schedule', b)); };
+const saveHw = h => { const b = clone(hwBody(h)); return queue('hw:' + h.id, () => api('PUT', '/api/homeworks/' + h.id, b)); };
+const removeHwDoc = id => queue('hw:' + id, () => api('DELETE', '/api/homeworks/' + id));
+function savePrefs() {
+  lsSet(THEME_KEY, state.settings.theme);
+  const b = clone(prefsBody());
+  return queue('prefs', () => api('PUT', '/api/prefs', b));
+}
+async function savePhoto(id, data) { return (await queue('photo:' + id, () => api('POST', '/api/photos', {id, data}))) !== 'failed'; }
+const photoUrl = id => '/api/photos/' + encodeURIComponent(id);
+
+let refreshing = false, refreshAgain = false;
+async function refresh() {
+  if (refreshing) { refreshAgain = true; return; }
+  refreshing = true;
+  try {
+    const d = await api('GET', '/api/state');
+    applyServerState(d);
+    store.authed = true; store.offline = false;
+    connectLive();
+  } catch (e) {
+    if (e instanceof TypeError) store.offline = true;
+  }
+  store.ready = true; refreshing = false;
+  applyTheme(); rerender();
+  if (refreshAgain) { refreshAgain = false; refresh(); }
+}
+
+/* Live updates: the server pings every open page when anything changes. */
+let live = null, liveTimer = null;
+function connectLive() {
+  if (live || typeof EventSource === 'undefined') return;
+  live = new EventSource('/api/events');
+  live.addEventListener('change', () => { clearTimeout(liveTimer); liveTimer = setTimeout(refresh, 200); });
+  live.onopen = () => { if (store.offline) refresh(); };
+  live.onerror = () => { store.offline = true; };
+}
+function closeLive() { if (live) { live.close(); live = null; } }
+
+/* ---------- domain: schedule ---------- */
+const subjectById = id => state.subjects.find(s => s.id === id);
+const lessonsFor = wd => state.lessons.filter(l => l.weekday === wd).sort((a, b) => a.period - b.period);
+const maxPeriod = wd => lessonsFor(wd).reduce((m, l) => Math.max(m, l.period), 0);
+function findOrCreateSubject(name) {
+  const clean = String(name || '').trim().replace(/\s+/g, ' ');
+  if (!clean) return null;
+  const hit = state.subjects.find(s => s.name.toLowerCase() === clean.toLowerCase());
+  if (hit) return hit;
+  const s = {id:uid(), name:cap(clean), color:PALETTE[state.subjects.length % PALETTE.length]};
+  state.subjects.push(s);
+  return s;
+}
+/* A lesson's `period` is its real lesson number, so a free slot stays a gap. */
+function addLesson(wd, subjectId, period) {
+  const p = period || Math.min(MAX_PERIOD, maxPeriod(wd) + 1);
+  const prev = state.lessons.filter(l => l.subjectId === subjectId && l.room).pop();
+  state.lessons.push({id:uid(), weekday:wd, period:p, subjectId, room:prev ? prev.room : ''});
+}
+function moveLesson(id, dir) {
+  const l = state.lessons.find(x => x.id === id); if (!l) return;
+  const target = l.period + dir;
+  if (target < 1 || target > MAX_PERIOD) return;
+  const other = state.lessons.find(x => x.weekday === l.weekday && x.period === target);
+  if (other) other.period = l.period;
+  l.period = target;
+}
+function removeLesson(id) { state.lessons = state.lessons.filter(x => x.id !== id); }
+function replaceSchedule(draft) {
+  state.lessons = [];
+  for (const wd of SCHOOL_DAYS) {
+    (draft[wd] || []).forEach((name, i) => {
+      const s = findOrCreateSubject(name);
+      if (s) state.lessons.push({id:uid(), weekday:wd, period:i + 1, subjectId:s.id, room:''});
+    });
+  }
+}
+
+/* The heart of the app: real upcoming lesson dates for a subject. It scans
+   forward day by day from tomorrow, so week, month and year boundaries are
+   plain calendar arithmetic, and two lessons on one day count as one date. */
+function nextLessonDates(subjectId, from = today(), count = 3) {
+  const days = new Set(state.lessons.filter(l => l.subjectId === subjectId).map(l => l.weekday));
+  if (!days.size) return [];
+  const out = [];
+  for (let i = 1; i <= 730 && out.length < count; i++) {
+    const d = addDays(from, i);
+    if (days.has(d.getDay())) out.push(ymd(d));
+  }
+  return out;
+}
+
+/* Bells: each lesson is lessonLen minutes, followed by a breakLen break. */
+function toMin(hhmm) { const [h, m] = String(hhmm || '08:00').split(':').map(Number); return h * 60 + (m || 0); }
+function fromMin(m) { return Math.floor(m / 60) + ':' + pad(m % 60); }
+function slotTimes(period) {
+  const s = state.settings, len = Number(s.lessonLen) || 40, brk = Number(s.breakLen) || 0;
+  const start = toMin(s.dayStart) + (period - 1) * (len + brk);
+  return {start:fromMin(start), end:fromMin(start + len)};
+}
+const slotLabel = p => { const t = slotTimes(p); return t.start + '–' + t.end; };
+function dayRange(wd) {
+  const ls = lessonsFor(wd);
+  if (!ls.length) return null;
+  return {from:slotTimes(ls[0].period).start, to:slotTimes(ls[ls.length - 1].period).end, count:ls.length};
+}
+const dayRangeLabel = wd => { const r = dayRange(wd); return r ? 'с ' + r.from + ' до ' + r.to : 'уроков нет'; };
+const periodsOn = (subjectId, wd) => lessonsFor(wd).filter(l => l.subjectId === subjectId).map(l => l.period);
+function periodsLabel(ps) {
+  if (!ps.length) return '';
+  const t = ps.length > 1 ? slotTimes(ps[0]).start + '–' + slotTimes(ps[ps.length - 1]).end : slotLabel(ps[0]);
+  return (ps.length > 1 ? 'уроки ' + ps.join(', ') : ps[0] + ' урок') + ' · ' + t;
+}
+
+/* ---------- domain: homework ---------- */
+const hwById = id => state.homeworks.find(h => h.id === id);
+const hwOn = due => state.homeworks.filter(h => h.due === due);
+function toggleDone(id) {
+  const h = hwById(id); if (!h) return;
+  if (isDone(h)) delete state.done[id]; else state.done[id] = new Date().toISOString();
+  savePrefs(); render(); renderSheet();
+  showToast(isDone(h) ? 'Выполнено' : 'Отметка снята');
+}
+function deleteHomework(id) {
+  state.homeworks = state.homeworks.filter(x => x.id !== id);
+  removeHwDoc(id);
+  if (state.done[id]) { delete state.done[id]; savePrefs(); }
+}
+function deleteSubject(id) {
+  state.homeworks.filter(h => h.subjectId === id).forEach(h => deleteHomework(h.id));
+  state.lessons = state.lessons.filter(l => l.subjectId !== id);
+  state.subjects = state.subjects.filter(s => s.id !== id);
+  saveSchedule();
+}
+/* ---------- planning: when to do homework that is due later ----------
+   Homework due in 2+ days can be done earlier, on a light day. A day's load is
+   its lesson count plus the unfinished homework already due the next morning,
+   because that is what the evening is spent on. Sunday has no lessons, so it
+   often wins; ties go to the earlier day so the work isn't put off. */
+const PLAN_MIN_DAYS = 2;
+const canPlan = h => !isDone(h) && daysBetween(ymd(today()), h.due) >= PLAN_MIN_DAYS;
+function dayLoad(dateStr, exceptId) {
+  const lessons = lessonsFor(parse(dateStr).getDay()).length;
+  const next = ymd(addDays(parse(dateStr), 1));
+  const dueNext = state.homeworks.filter(x => x.due === next && x.id !== exceptId && !isDone(x)).length;
+  return {lessons, dueNext, score:lessons + dueNext * 1.5};
+}
+function planCandidates(h) {
+  const out = [];
+  for (let d = today(); ymd(d) < h.due && out.length < 14; d = addDays(d, 1)) {
+    const k = ymd(d);
+    out.push({date:k, ...dayLoad(k, h.id)});
+  }
+  return out;
+}
+function suggestedDay(h) {
+  if (!canPlan(h)) return null;
+  let best = null;
+  for (const c of planCandidates(h)) if (!best || c.score < best.score) best = c;
+  return best ? best.date : null;
+}
+function plannedDay(h) {
+  if (!canPlan(h)) return null;
+  const p = state.plan[h.id];
+  if (p && p >= ymd(today()) && p < h.due) return p;
+  return suggestedDay(h);
+}
+function dayWord(dateStr) {
+  const d = daysBetween(ymd(today()), dateStr);
+  if (d === 0) return 'сегодня';
+  if (d === 1) return 'завтра';
+  return WD_SHORT[parse(dateStr).getDay()].toLowerCase() + ', ' + shortDate(dateStr);
+}
+function loadLabel(c) {
+  const parts = [c.lessons ? c.lessons + ' ' + plural(c.lessons, 'урок', 'урока', 'уроков') : 'нет уроков'];
+  if (c.dueNext) parts.push('на следующий день ' + c.dueNext + ' ' + plural(c.dueNext, 'задание', 'задания', 'заданий'));
+  return parts.join(', ');
+}
+
+function authorName(id) {
+  if (!id) return '';
+  if (id === store.me?.id) return 'ты';
+  return store.users[id] || 'ученик';
+}
+
+/* ---------- theme ---------- */
+function applyTheme() {
+  const t = state.settings.theme;
+  if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+  else document.documentElement.removeAttribute('data-theme');
+}
+
+/* ---------- images ---------- */
+function readAsDataURL(blob) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
+}
+async function compressImage(file) {
+  const src = await readAsDataURL(file);
+  const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+  const attempt = (max, q) => {
+    const k = Math.min(1, max / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', q);
+  };
+  let out = attempt(1600, .8);
+  if (out.length > 1500000) out = attempt(1200, .7);
+  return out;
+}
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function showToast(text) {
+  const root = document.getElementById('toast-root');
+  root.innerHTML = '<div class="toast" role="status">' + esc(text) + '</div>';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { root.innerHTML = ''; }, 2800);
+}
+
+/* ---------- render parts ---------- */
+const dot = color => '<span class="dot" style="background:' + esc(color || '#999') + '"></span>';
+function subjectTitle(sid) {
+  const s = subjectById(sid);
+  return dot(s?.color) + '<span>' + esc(s?.name || 'Без предмета') + '</span>';
+}
+function checkBtn(h) {
+  const on = isDone(h);
+  return '<button class="check' + (on ? ' on' : '') + '" data-act="toggle" data-id="' + h.id + '" aria-label="' + (on ? 'Снять отметку' : 'Отметить выполненным') + '">' + I.check + '</button>';
+}
+function hwRow(h, opts = {}) {
+  const done = isDone(h);
+  const st = done ? {cls:'done', label:'✓ Выполнено'} : dueStatus(h.due);
+  const by = h.author && h.author !== store.me?.id ? '<span>' + esc('записал(а) ' + authorName(h.author)) + '</span>' : '';
+  const pd = opts.noPlan ? null : plannedDay(h);
+  const plan = pd ? '<span class="plan-chip">' + I.pencil.replace(/width="20" height="20"/, 'width="13" height="13"') + 'сделать ' + esc(dayWord(pd)) + '</span>' : '';
+  return '<div class="row tap" data-act="open-hw" data-id="' + h.id + '" role="button" tabindex="0">' + checkBtn(h) +
+    '<div class="row-main">' +
+      '<div class="row-title">' + subjectTitle(h.subjectId) + (h.photos?.length ? '<span class="faint" title="Есть фото">' + I.photo + '</span>' : '') + '</div>' +
+      '<div class="row-text clamp' + (done ? ' strike' : '') + '">' + esc(h.text || 'Без описания') + '</div>' +
+      '<div class="row-meta"><span>' + esc(shortDate(h.due)) + '</span>' + (opts.noStatus && !done ? '' : '<span class="pill ' + st.cls + '">' + st.label + '</span>') + plan + by + '</div>' +
+    '</div></div>';
+}
+function dayPlan(dateStr) {
+  const wd = parse(dateStr).getDay();
+  const lessons = lessonsFor(wd);
+  if (!lessons.length) return '<div class="list"><div class="empty"><b>Уроков нет</b>' + (wd === 0 ? 'Воскресенье — выходной.' : 'На этот день расписание не заполнено.') + '</div></div>';
+  const hws = hwOn(dateStr);
+  const byPeriod = new Map(lessons.map(l => [l.period, l]));
+  const rows = [];
+  for (let p = 1; p <= maxPeriod(wd); p++) {
+    const l = byPeriod.get(p);
+    if (!l) { rows.push('<div class="row gap"><span class="num">' + p + '</span><div class="row-main">Нет урока · <span class="time">' + slotLabel(p) + '</span></div></div>'); continue; }
+    const h = hws.find(x => x.subjectId === l.subjectId);
+    const done = h && isDone(h);
+    const meta = '<div class="row-meta"><span class="time">' + slotLabel(p) + '</span>' + (l.room ? '<span class="room">каб. ' + esc(l.room) + '</span>' : '') + (done ? '<span class="pill done">✓ Выполнено</span>' : '') + '</div>';
+    const body = h ? '<div class="row-text' + (done ? ' strike' : '') + '">' + esc(h.text || 'Без описания') + '</div>'
+      : '<div class="row-text faint">Нет записанного ДЗ · нажми, чтобы записать</div>';
+    const act = h ? 'data-act="open-hw" data-id="' + h.id + '"' : 'data-act="add-for" data-subject="' + l.subjectId + '" data-due="' + dateStr + '"';
+    rows.push('<div class="row tap" role="button" tabindex="0" ' + act + '><span class="num">' + p + '</span><div class="row-main"><div class="row-title">' + subjectTitle(l.subjectId) + '</div>' + meta + body + '</div>' + (h ? checkBtn(h) : '') + '</div>');
+  }
+  return '<div class="list ruled">' + rows.join('') + '</div>';
+}
+function daySummary(dateStr) {
+  const r = dayRange(parse(dateStr).getDay());
+  if (!r) return '';
+  return '<p style="margin:0 4px"><span class="day-range">' + I.clock + r.from + '–' + r.to + '</span><span class="muted"> · ' + r.count + ' ' + plural(r.count, 'урок', 'урока', 'уроков') + '</span></p>';
+}
+const offlineBanner = () => store.offline ? '<div class="banner" style="background:var(--red-soft)"><div><b>Нет связи с сервером</b>Изменения не сохраняются. Проверь, что сервер запущен на компьютере, и обнови страницу.</div></div>' : '';
+
+/* ---------- screens ---------- */
+function screenAuth() {
+  const reg = ui.authMode === 'register';
+  return '<div class="hero"><h1>Дневник ДЗ</h1><p>' + (reg ? 'Придумай имя и пароль. Под этим именем тебя увидят одноклассники.' : 'Войди, чтобы видеть расписание и домашние задания класса.') + '</p></div>' +
+    '<div class="seg" style="grid-template-columns:1fr 1fr;margin-block-end:18px" role="group" aria-label="Вход или регистрация">' +
+      '<button data-act="auth-mode" data-mode="login" class="' + (reg ? '' : 'on') + '" aria-pressed="' + !reg + '">Вход</button>' +
+      '<button data-act="auth-mode" data-mode="register" class="' + (reg ? 'on' : '') + '" aria-pressed="' + reg + '">Регистрация</button></div>' +
+    '<form id="auth-form" class="stack" novalidate>' +
+      '<label class="field-label" for="auth-name">Имя</label><input class="field" id="auth-name" name="username" autocomplete="username" maxlength="40" value="' + esc(ui.authName) + '" placeholder="Например, Ильназ">' +
+      '<label class="field-label" for="auth-pass">Пароль</label><input class="field" id="auth-pass" type="password" autocomplete="' + (reg ? 'new-password' : 'current-password') + '"' + (reg ? ' placeholder="Не короче 6 символов"' : '') + '>' +
+      (reg ? '<label class="field-label" for="auth-pass2">Повтори пароль</label><input class="field" id="auth-pass2" type="password" autocomplete="new-password">' : '') +
+      (ui.authError ? '<p class="err" style="margin:0" role="alert">' + esc(ui.authError) + '</p>' : '') +
+      '<button class="btn" type="submit"' + (ui.authBusy ? ' disabled' : '') + '>' + (ui.authBusy ? 'Подожди…' : reg ? 'Зарегистрироваться' : 'Войти') + '</button>' +
+    '</form>' +
+    '<p class="note" style="margin-top:18px">' + (reg ? 'Первый, кто зарегистрируется, становится администратором дневника.' : 'Забыл пароль? Попроси администратора дневника сбросить его.') + '</p>';
+}
+
+function screenToday() {
+  const t = ymd(today()), tm = ymd(addDays(today(), 1));
+  const upcoming = state.homeworks.filter(h => !isDone(h)).sort((a, b) => a.due.localeCompare(b.due) || String(a.createdAt).localeCompare(String(b.createdAt)));
+  let out = '<header class="head"><div><h1>Сегодня</h1><p class="sub">' + esc(longDate(t)) + '</p></div><div class="head-actions"><button class="link" data-act="page" data-page="history">История</button></div></header>';
+  out += offlineBanner();
+
+  const todayRange = dayRange(today().getDay());
+  out += '<div class="stack" style="margin-block-end:22px">' +
+    (todayRange ? '<p class="muted" style="margin:0 4px">Сегодня учимся <b style="color:var(--ink)" class="time">' + dayRangeLabel(today().getDay()) + '</b>, ' + todayRange.count + ' ' + plural(todayRange.count, 'урок', 'урока', 'уроков') + '</p>' : '<p class="muted" style="margin:0 4px">Сегодня уроков нет</p>') +
+    '<button class="btn" data-act="add">' + I.plusSm + 'Записать домашнее задание</button></div>';
+
+  const s = state.settings;
+  if (s.remind) {
+    const now = new Date(), [hh, mm] = String(s.remindTime).split(':').map(Number);
+    const left = hwOn(tm).filter(h => !isDone(h));
+    if (left.length && now.getHours() * 60 + now.getMinutes() >= hh * 60 + mm) {
+      out += '<div class="banner"><span style="color:var(--amber)">' + I.bell + '</span><div><b>Домашка на завтра</b>У тебя осталось ' + left.length + ' ' + plural(left.length, 'невыполненное задание', 'невыполненных задания', 'невыполненных заданий') + ':<ul>' + left.map(h => '<li>' + esc(subjectById(h.subjectId)?.name || 'Без предмета') + '</li>').join('') + '</ul></div></div>';
+    }
+  }
+
+  const doToday = upcoming.filter(h => plannedDay(h) === t);
+  if (doToday.length) {
+    const load = dayLoad(t);
+    out += '<section class="plan-card" aria-label="Можно сделать сегодня"><div class="plan-head"><span class="plan-icon">' + I.checkMd + '</span><div><b>Можно сделать сегодня</b>' +
+      '<span>Сдавать не скоро, а сегодня самый свободный день до сдачи: ' + esc(loadLabel(load)) + '.</span></div></div><div class="plan-list">' +
+      doToday.map(h => '<button class="plan-item" data-act="open-hw" data-id="' + h.id + '"><span class="row-title">' + subjectTitle(h.subjectId) + '</span><span class="row-text clamp">' + esc(h.text || 'Без описания') + '</span><span class="row-meta">сдать ' + esc(dayWord(h.due)) + ' · ' + esc(dueStatus(h.due).label.toLowerCase()) + '</span></button>').join('') +
+      '</div><p class="plan-foot">Другой день можно выбрать в карточке задания.</p></section>';
+  }
+
+  out += '<section class="section"><div class="section-title"><h2>Ближайшие задания</h2><span class="aside">' + (upcoming.length ? upcoming.length + ' ' + plural(upcoming.length, 'задание', 'задания', 'заданий') : '') + '</span></div>';
+  out += upcoming.length ? '<div class="list">' + upcoming.map(h => hwRow(h)).join('') + '</div>' : '<div class="list"><div class="empty"><b>Всё сделано</b>Невыполненных заданий нет.</div></div>';
+  out += '</section>';
+  out += '<section class="section"><div class="section-title"><h2>На завтра</h2><span class="aside">' + esc(longDate(tm)) + '</span></div>' + daySummary(tm) + dayPlan(tm) + '</section>';
+  return out;
+}
+
+function screenCalendar() {
+  if (!ui.weekStart) {
+    const t = today(); const shift = (t.getDay() + 6) % 7;
+    ui.weekStart = addDays(t, -shift); ui.calSel = ymd(t.getDay() === 0 ? addDays(t, 1) : t);
+  }
+  const days = SCHOOL_DAYS.map((_, i) => addDays(ui.weekStart, i));
+  const t = ymd(today());
+  const end = addDays(ui.weekStart, 5);
+  const label = ui.weekStart.getMonth() === end.getMonth() ? ui.weekStart.getDate() + '–' + fmtDay.format(end) : fmtDay.format(ui.weekStart) + ' – ' + fmtDay.format(end);
+  let out = '<header class="head"><div><h1>Календарь</h1><p class="sub">' + esc(cap(fmtMonth.format(ui.weekStart)).replace(' г.', '')) + '</p></div><div class="head-actions"><button class="link" data-act="cal-today">Сегодня</button></div></header>';
+  out += offlineBanner();
+  out += '<div class="week"><button class="icon-btn plain" data-act="week" data-dir="-1" aria-label="Предыдущая неделя">' + I.left + '</button><div class="week-days">' +
+    days.map(d => {
+      const k = ymd(d), has = hwOn(k).some(h => !isDone(h));
+      return '<button class="wd' + (k === ui.calSel ? ' sel' : '') + (k === t ? ' today' : '') + '" data-act="cal-sel" data-day="' + k + '"><small>' + WD_SHORT[d.getDay()] + '</small><span>' + d.getDate() + '</span><i class="' + (has ? '' : 'none') + '"></i></button>';
+    }).join('') +
+    '</div><button class="icon-btn plain" data-act="week" data-dir="1" aria-label="Следующая неделя">' + I.right + '</button></div>';
+  out += '<p class="week-label">' + esc(label) + '</p>';
+  out += '<section class="section"><div class="section-title"><h2>' + esc(longDate(ui.calSel)) + '</h2></div>' + daySummary(ui.calSel) + dayPlan(ui.calSel) +
+    '<button class="btn ghost" data-act="add-on-day" data-due="' + ui.calSel + '">' + I.plusSm + 'Записать ДЗ на ' + esc(shortDate(ui.calSel)) + '</button></section>';
+  return out;
+}
+
+function screenSchedule() {
+  let out = '<header class="head"><div><h1>Расписание</h1><p class="sub">Понедельник — суббота</p></div></header>';
+  out += offlineBanner();
+  out += '<section class="section"><div class="list">' + SCHOOL_DAYS.map(wd => {
+    const subjectNames = lessonsFor(wd).map(l => subjectById(l.subjectId)?.name).filter(Boolean);
+    const r = dayRange(wd);
+    return '<button class="row" data-act="page" data-page="day" data-wd="' + wd + '"><div class="row-main"><div class="row-title" style="justify-content:space-between;flex-wrap:wrap"><span>' + WD_FULL[wd] + '</span>' + (r ? '<span class="time muted" style="font-weight:500;font-size:14px">' + r.from + '–' + r.to + ' · ' + r.count + ' ' + plural(r.count, 'урок', 'урока', 'уроков') + '</span>' : '') + '</div><div class="row-text clamp muted">' + esc(subjectNames.length ? subjectNames.join(', ') : 'Нет уроков') + '</div></div><span class="chev">' + I.chev + '</span></button>';
+  }).join('') + '</div><p class="note">Урок ' + (Number(state.settings.lessonLen) || 40) + ' минут, перемена ' + (Number(state.settings.breakLen) || 0) + ' минут, первый урок в ' + fromMin(toMin(state.settings.dayStart)) + '. Меняется в настройках.</p></section>';
+  out += '<section class="section"><div class="list"><button class="row action-row" data-act="page" data-page="subjects">' + I.list + '<span class="row-main">Предметы</span><span class="chev">' + I.chev + '</span></button></div></section>';
+  return out;
+}
+
+function pageDay(wd) {
+  const lessons = lessonsFor(wd);
+  let out = '<button class="back" data-act="back">' + I.left + 'Расписание</button>';
+  out += '<header class="head"><div><h1>' + WD_FULL[wd] + '</h1><p class="sub">Учимся ' + dayRangeLabel(wd) + '. Нажми на предмет, чтобы заменить его.</p></div></header><section class="section">';
+  const top = maxPeriod(wd);
+  if (!lessons.length) out += '<div class="list"><div class="empty"><b>Уроков нет</b>Добавь первый урок на этот день.</div></div>';
+  else {
+    const rows = [];
+    for (let p = 1; p <= top; p++) {
+      const l = lessons.find(x => x.period === p);
+      if (!l) {
+        rows.push('<button class="row gap action-row" data-act="fill-slot" data-wd="' + wd + '" data-p="' + p + '"><span class="num">' + p + '</span><span class="row-main">Нет урока · <span class="time">' + slotLabel(p) + '</span> · поставить урок</span></button>');
+        continue;
+      }
+      rows.push('<div class="row" style="align-items:center"><span class="num">' + p + '</span>' +
+        '<button class="row-main" style="border:0;background:none;padding:0;text-align:left" data-act="change-lesson" data-id="' + l.id + '"><span class="row-title">' + subjectTitle(l.subjectId) + '</span><span class="row-meta time">' + slotLabel(p) + '</span></button>' +
+        '<input class="room-input" data-room="' + l.id + '" value="' + esc(l.room || '') + '" placeholder="каб." aria-label="Кабинет">' +
+        '<span class="lesson-ctrl"><button data-act="lesson-move" data-id="' + l.id + '" data-dir="-1" aria-label="На урок раньше"' + (p === 1 ? ' disabled' : '') + '>' + I.up + '</button><button data-act="lesson-move" data-id="' + l.id + '" data-dir="1" aria-label="На урок позже"' + (p >= MAX_PERIOD ? ' disabled' : '') + '>' + I.down + '</button><button class="del" data-act="lesson-del" data-id="' + l.id + '" aria-label="Убрать урок">' + I.trash + '</button></span></div>');
+    }
+    out += '<div class="list ruled">' + rows.join('') + '</div>';
+  }
+  out += '<button class="btn ghost" data-act="add-lesson" data-wd="' + wd + '"' + (top >= MAX_PERIOD ? ' disabled' : '') + '>' + I.plusSm + 'Добавить урок ' + (top + 1) + '</button>' +
+    '<p class="note">Стрелки сдвигают урок на номер раньше или позже. Если убрать урок из середины дня, на его месте останется окно. Изменения видит весь класс.</p>';
+  return out + '</section>';
+}
+
+function pageSubjects() {
+  let out = '<button class="back" data-act="back">' + I.left + 'Назад</button>';
+  out += '<header class="head"><div><h1>Предметы</h1><p class="sub">Нажми на название, чтобы переименовать</p></div></header><section class="section">';
+  out += state.subjects.length ? '<div class="list">' + state.subjects.map(s => {
+    const n = state.lessons.filter(l => l.subjectId === s.id).length;
+    return '<div class="row" style="align-items:center">' + dot(s.color) + '<input class="inline-input" data-rename="' + s.id + '" value="' + esc(s.name) + '" aria-label="Название предмета"><span class="faint" style="font-size:13px">' + n + ' ' + plural(n, 'урок', 'урока', 'уроков') + '</span><button class="icon-btn plain" style="color:var(--red)" data-act="subject-del" data-id="' + s.id + '" aria-label="Удалить предмет">' + I.trash + '</button></div>';
+  }).join('') + '</div>' : '<div class="list"><div class="empty"><b>Предметов пока нет</b>Они появятся, когда ты добавишь уроки.</div></div>';
+  out += '<div class="list"><div class="row" style="align-items:center">' + I.plusSm + '<input class="inline-input" id="new-subject-page" placeholder="Новый предмет" aria-label="Новый предмет"><button class="link" data-act="subject-add-page">Добавить</button></div></div></section>';
+  return out;
+}
+
+function pageHistory() {
+  const done = state.homeworks.filter(isDone);
+  const groups = {};
+  done.forEach(h => { (groups[h.due] ||= []).push(h); });
+  const keys = Object.keys(groups).sort().reverse();
+  let out = '<button class="back" data-act="back">' + I.left + 'Назад</button>';
+  out += '<header class="head"><div><h1>История</h1><p class="sub">Задания, которые ты отметил выполненными</p></div></header>';
+  if (!keys.length) return out + '<div class="list"><div class="empty"><b>История пуста</b>Отмеченные задания появятся здесь.</div></div>';
+  return out + keys.map(k => '<section class="section"><div class="section-title"><h2>' + esc(longDate(k)) + '</h2></div><div class="list">' + groups[k].map(h => hwRow(h, {noStatus:true})).join('') + '</div></section>').join('');
+}
+
+function pageClass() {
+  const ids = Object.keys(store.users).filter(id => id !== store.me?.id).sort((a, b) => store.users[a].localeCompare(store.users[b], 'ru'));
+  let out = '<button class="back" data-act="back">' + I.left + 'Настройки</button>';
+  out += '<header class="head"><div><h1>Ученики</h1><p class="sub">Все, кто зарегистрирован в дневнике</p></div></header><section class="section">';
+  out += ids.length ? '<div class="list">' + ids.map(id => '<div class="row" style="align-items:center">' + I.user + '<span class="row-main" style="font-weight:500">' + esc(store.users[id]) + '</span><button class="link" data-act="reset-pass" data-id="' + id + '">Сбросить пароль</button></div>').join('') + '</div>'
+    : '<div class="list"><div class="empty"><b>Пока только ты</b>Когда одноклассники зарегистрируются, они появятся здесь.</div></div>';
+  return out + '<p class="note">Сброс выдаёт новый временный пароль из 6 цифр. Передай его ученику, и он сможет войти и сменить пароль.</p></section>';
+}
+
+function screenSettings() {
+  const s = state.settings, admin = store.isAdmin;
+  let out = '<header class="head"><div><h1>Настройки</h1></div></header>';
+  out += offlineBanner();
+
+  out += '<section class="section"><div class="section-title"><h2>Учётная запись</h2></div><div class="list">' +
+    '<div class="row" style="align-items:center"><span style="color:var(--accent)">' + I.user + '</span><span class="row-main"><span style="font-weight:600">' + esc(store.me?.name || '') + '</span><span class="muted" style="font-size:13px">' + (admin ? 'Администратор дневника' : 'Ученик') + '</span></span><button class="link" data-act="logout">Выйти</button></div>' +
+    '<button class="row action-row" data-act="change-pass">' + I.key + '<span class="row-main">Сменить пароль</span><span class="chev">' + I.chev + '</span></button>' +
+    (admin ? '<button class="row action-row" data-act="page" data-page="class">' + I.people + '<span class="row-main">Ученики и сброс паролей</span><span class="chev">' + I.chev + '</span></button>' : '') +
+    '</div></section>';
+
+  out += '<section class="section"><div class="section-title"><h2>Открыть с телефона</h2></div><div class="list"><div class="row">' + '<span style="color:var(--accent)">' + I.phone + '</span><div class="row-main">' +
+    (store.lan.length ? store.lan.map(u => '<span class="time" style="font-weight:600;user-select:all">' + esc(u) + '</span>').join('') : '<span>Компьютер с сервером не подключён к сети.</span>') +
+    '<span class="muted" style="font-size:14px">Телефон должен быть в той же Wi-Fi сети, а компьютер с сервером — включён. Каждый регистрируется под своим именем.</span></div></div></div></section>';
+
+  out += '<section class="section"><div class="section-title"><h2>Расписание</h2></div><div class="list"><button class="row action-row" data-act="goto-schedule">' + I.list + '<span class="row-main">Изменить расписание</span><span class="chev">' + I.chev + '</span></button></div></section>';
+
+  const bellList = Array.from({length:8}, (_, i) => '<span><b>' + (i + 1) + '</b>' + slotLabel(i + 1) + '</span>').join('');
+  out += '<section class="section"><div class="section-title"><h2>Звонки</h2></div><div class="list">' +
+    '<div class="row" style="align-items:center"><label for="day-start" class="row-main" style="font-weight:500">Начало 1-го урока</label><input type="time" id="day-start" class="field" style="width:auto" data-setting="dayStart" value="' + esc(s.dayStart) + '"></div>' +
+    '<div class="row" style="align-items:center"><label for="lesson-len" class="row-main" style="font-weight:500">Урок, минут</label><input type="number" min="20" max="90" id="lesson-len" class="field num-field" data-setting="lessonLen" value="' + esc(s.lessonLen) + '"></div>' +
+    '<div class="row" style="align-items:center"><label for="break-len" class="row-main" style="font-weight:500">Перемена, минут</label><input type="number" min="0" max="60" id="break-len" class="field num-field" data-setting="breakLen" value="' + esc(s.breakLen) + '"></div>' +
+    '<div class="bells" style="border-top:1px solid var(--line)">' + bellList + '</div></div><p class="note">Звонки общие для всего класса.</p></section>';
+
+  out += '<section class="section"><div class="section-title"><h2>Напоминание</h2></div><div class="list">' +
+    '<div class="row" style="align-items:center"><span class="row-main"><label for="remind-toggle" style="font-weight:500">Напоминать о невыполненном ДЗ</label></span><span class="switch"><input type="checkbox" id="remind-toggle" data-setting="remind"' + (s.remind ? ' checked' : '') + '><span></span></span></div>' +
+    (s.remind ? '<div class="row" style="align-items:center"><label for="remind-time" class="row-main" style="font-weight:500">Время</label><input type="time" id="remind-time" class="field" style="width:auto" data-setting="remindTime" value="' + esc(s.remindTime) + '"></div>' : '') +
+    '</div><p class="note">После этого времени напоминание со списком заданий на завтра появляется вверху экрана «Сегодня».</p></section>';
+
+  out += '<section class="section"><div class="section-title"><h2>Тема</h2></div><div class="seg" role="group" aria-label="Тема оформления">' +
+    [['system','Системная'],['light','Светлая'],['dark','Тёмная']].map(([k, l]) => '<button data-act="theme" data-theme-val="' + k + '" class="' + (s.theme === k ? 'on' : '') + '" aria-pressed="' + (s.theme === k) + '">' + l + '</button>').join('') + '</div></section>';
+
+  out += '<section class="section"><div class="section-title"><h2>История</h2></div><div class="list"><button class="row action-row" data-act="page" data-page="history">' + I.clock + '<span class="row-main">История выполненных заданий</span><span class="chev">' + I.chev + '</span></button>' +
+    '<button class="row action-row danger" data-act="clear-done">' + I.checkMd + '<span class="row-main">Очистить мою историю</span></button></div></section>';
+
+  out += '<section class="section"><div class="section-title"><h2>Данные</h2></div><div class="list">' +
+    '<button class="row action-row" data-act="export">' + I.down + '<span class="row-main">Экспортировать данные (резервная копия)</span></button>' +
+    (admin ? '<label class="row action-row tap" style="cursor:pointer">' + I.up + '<span class="row-main">Импортировать данные</span><input type="file" accept="application/json,.json" data-file="import" hidden></label>' +
+      '<button class="row action-row danger" data-act="clear-old">' + I.trash + '<span class="row-main">Удалить задания старше месяца</span></button>' +
+      '<button class="row action-row danger" data-act="wipe">' + I.trash + '<span class="row-main">Удалить все данные</span></button>' : '') +
+    '</div>' + (admin ? '<p class="note">Импорт и удаление меняют дневник для всего класса, поэтому доступны только администратору.</p>' : '') + '</section>';
+  return out;
+}
+
+function screenLoading() {
+  return '<div class="hero"><h1>Дневник ДЗ</h1><p style="display:flex;gap:10px;align-items:center"><span class="spinner"></span>Загружаю дневник…</p></div>';
+}
+function screenOffline() {
+  return '<div class="hero"><h1>Нет связи с сервером</h1><p>Проверь, что на компьютере запущен сервер дневника (команда npm start в папке проекта), и обнови страницу.</p></div><button class="btn" data-act="retry">Попробовать снова</button>';
+}
+function screenOnboarding() {
+  return '<div class="hero"><h1>Добро пожаловать</h1><p>Добавь школьное расписание, и дневник будет сам понимать, когда следующий урок.</p></div>' +
+    '<button class="btn" data-act="manual">' + I.pencil + 'Заполнить расписание</button>';
+}
+function pageReview() {
+  const d = ui.page.draft;
+  let out = '<button class="back" data-act="back">' + I.left + 'Назад</button>';
+  out += '<header class="head"><div><h1>Расписание</h1><p class="sub">Впиши уроки по номерам. Пустая строка означает, что урока нет.</p></div></header>';
+  out += SCHOOL_DAYS.map(wd => '<section class="section"><div class="section-title"><h2>' + WD_FULL[wd] + '</h2></div><div class="list ruled">' +
+    (d[wd] || []).map((name, i) => '<div class="row" style="align-items:center"><span class="num">' + (i + 1) + '</span><div class="row-main"><input class="inline-input" data-draft="' + wd + ':' + i + '" value="' + esc(name) + '" placeholder="Нет урока" aria-label="' + WD_FULL[wd] + ', урок ' + (i + 1) + '"></div><span class="lesson-ctrl"><button class="del" data-act="draft-del" data-wd="' + wd + '" data-i="' + i + '" aria-label="Удалить строку">' + I.trash + '</button></span></div>').join('') +
+    '<button class="row action-row" data-act="draft-add" data-wd="' + wd + '"><span class="num">' + I.plusSm + '</span><span class="row-main">Добавить урок</span></button></div></section>').join('');
+  return out + '<button class="btn" data-act="save-schedule">Сохранить расписание</button>';
+}
+
+/* ---------- main render ---------- */
+const app = document.getElementById('app');
+function render() {
+  let html, tabs = true;
+  const p = ui.page;
+  if (!store.ready) { html = screenLoading(); tabs = false; }
+  else if (!store.authed && store.offline) { html = screenOffline(); tabs = false; }
+  else if (!store.authed) { html = screenAuth(); tabs = false; }
+  else if (p?.name === 'review') { html = pageReview(); tabs = hasSchedule(); }
+  else if (!hasSchedule()) { html = screenOnboarding(); tabs = false; }
+  else if (p?.name === 'day') html = pageDay(p.wd);
+  else if (p?.name === 'subjects') html = pageSubjects();
+  else if (p?.name === 'history') html = pageHistory();
+  else if (p?.name === 'class' && store.isAdmin) html = pageClass();
+  else html = {today:screenToday, calendar:screenCalendar, schedule:screenSchedule, settings:screenSettings}[ui.tab]();
+
+  if (tabs) {
+    const t = (k, icon, label) => '<button class="tab' + (ui.tab === k ? ' on' : '') + '" data-act="tab" data-tab="' + k + '"' + (ui.tab === k ? ' aria-current="page"' : '') + '>' + icon + '<span>' + label + '</span></button>';
+    html += '<nav class="tabbar" aria-label="Разделы"><div class="tabbar-inner">' + t('today', I.sun, 'Сегодня') + t('calendar', I.cal, 'Календарь') +
+      '<button class="tab-add" data-act="add" aria-label="Добавить домашнее задание"><span>' + I.plus + '</span>ДЗ</button>' +
+      t('schedule', I.list, 'Расписание') + t('settings', I.gear, 'Настройки') + '</div></nav>';
+  }
+  app.className = 'app' + (tabs ? '' : ' no-tabs');
+  app.innerHTML = html;
+}
+function rerender() {
+  const a = document.activeElement;
+  const typingInPage = a && app.contains(a) && /^(INPUT|TEXTAREA)$/.test(a.tagName) && a.type !== 'checkbox';
+  if (!typingInPage) render();
+  if (!ui.sheet) return;
+  if (a && sheetRoot.contains(a) && /^(INPUT|TEXTAREA)$/.test(a.tagName)) return;
+  renderSheet();
+}
+
+/* ---------- sheets ---------- */
+const sheetRoot = document.getElementById('sheet-root');
+function openSheet(s) { ui.sheet = s; renderSheet(); }
+function closeSheet() { ui.sheet = null; renderSheet(); }
+function sheetFrame(title, body, left = '<button class="link l" data-act="close">Закрыть</button>', right = '') {
+  return '<div class="scrim" data-act="close"></div><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><div class="grabber"></div><div class="sheet-head"><span class="l">' + left + '</span><h3>' + esc(title) + '</h3><span class="r">' + right + '</span></div><div class="sheet-body">' + body + '</div></div>';
+}
+function subjectPickList(act) {
+  return (state.subjects.length ? '<div class="list">' + state.subjects.map(s => '<button class="row" style="align-items:center" data-act="' + act + '" data-id="' + s.id + '"><span class="row-main"><span class="row-title">' + dot(s.color) + esc(s.name) + '</span></span><span class="chev">' + I.chev + '</span></button>').join('') + '</div>' : '') +
+    '<div class="list"><div class="row" style="align-items:center">' + I.plusSm + '<input class="inline-input" id="new-subject" placeholder="Новый предмет" aria-label="Новый предмет"><button class="link" data-act="' + act + '-new">Добавить</button></div></div>';
+}
+function renderSheet() {
+  const s = ui.sheet;
+  if (!s) { sheetRoot.innerHTML = ''; document.body.style.overflow = ''; return; }
+  document.body.style.overflow = 'hidden';
+  let html = '';
+  if (s.type === 'add') {
+    if (s.step === 'subject') {
+      let body;
+      if (s.presetDue) {
+        const wd = parse(s.presetDue).getDay();
+        const dayIds = [...new Set(lessonsFor(wd).map(l => l.subjectId))];
+        body = (dayIds.length ? '<p class="sub-label">Уроки ' + esc(longDate(s.presetDue)) + '</p><div class="list">' + dayIds.map(id => {
+          const sub = subjectById(id);
+          return '<button class="row" style="align-items:center" data-act="pick-add" data-id="' + id + '"><span class="row-main"><span class="row-title">' + dot(sub?.color) + esc(sub?.name) + '</span><span class="row-meta">' + esc(periodsLabel(periodsOn(id, wd))) + '</span></span><span class="chev">' + I.chev + '</span></button>';
+        }).join('') + '</div>' : '<div class="banner info"><div>В этот день уроков нет. Можно выбрать любой предмет.</div></div>') +
+          '<p class="sub-label">Другой предмет</p>' + subjectPickList('pick-add');
+      } else body = subjectPickList('pick-add');
+      html = sheetFrame(s.presetDue ? 'ДЗ на ' + shortDate(s.presetDue) : 'Предмет', body, '<button class="link l" data-act="close">Отмена</button>');
+    } else if (s.step === 'date') {
+      const sub = subjectById(s.subjectId);
+      const dates = nextLessonDates(s.subjectId, today(), 3);
+      const labels = ['Следующий урок', 'Через урок', 'Через два урока'];
+      const body = '<div class="row-title" style="padding-inline:4px">' + dot(sub?.color) + esc(sub?.name) + '</div>' +
+        (dates.length ? '<div class="list date-options">' + dates.map((d, i) => '<button class="row" data-act="pick-date" data-due="' + d + '"><span class="row-main"><span class="opt-label">' + labels[i] + '</span><span class="opt-date">' + esc(longDate(d)) + '</span><span class="row-meta time">' + esc(periodsLabel(periodsOn(s.subjectId, parse(d).getDay()))) + '</span></span><span class="pill ' + dueStatus(d).cls + '">' + dueStatus(d).label + '</span><span class="chev">' + I.chev + '</span></button>').join('') + '</div>'
+          : '<div class="banner info"><div>Этого предмета нет в расписании. Выбери дату вручную или добавь предмет в расписание.</div></div>') +
+        '<div class="section" style="margin:0"><div class="section-title"><h2>Выбрать другую дату</h2></div><div class="btn-row"><input type="date" class="field" id="custom-due" value="' + (s.due || ymd(addDays(today(), 1))) + '" aria-label="Дата сдачи"><button class="btn secondary" data-act="custom-date">Продолжить</button></div></div>';
+      html = sheetFrame('Когда сдать?', body, '<button class="link l" data-act="add-back">Назад</button>');
+    } else {
+      const sub = subjectById(s.subjectId);
+      const ps = periodsOn(s.subjectId, parse(s.due).getDay());
+      const body = '<div class="list"><button class="row" style="align-items:center" data-act="add-back"><span class="row-main"><span class="row-title">' + dot(sub?.color) + esc(sub?.name) + '</span><span class="opt-date">' + esc(longDate(s.due)) + '</span>' +
+          (ps.length ? '<span class="row-meta time">' + esc(periodsLabel(ps)) + '</span>' : '<span class="row-meta">В этот день такого урока нет по расписанию</span>') +
+        '</span><span class="link">Изменить</span></button></div>' +
+        '<div class="section" style="margin:0"><div class="section-title"><h2>Что задано?</h2></div><textarea class="field" id="hw-text" placeholder="№1245, 1247&#10;Повторить производную">' + esc(s.text || '') + '</textarea></div>' +
+        '<div class="section" style="margin:0"><div class="section-title"><h2>Фотографии</h2></div><div class="photos">' +
+          (s.photos || []).map((p, i) => '<div class="ph"><img src="' + p + '" alt="Фото ' + (i + 1) + '"><button class="x" data-act="add-photo-del" data-i="' + i + '" aria-label="Убрать фото">' + I.x + '</button></div>').join('') +
+          '<label class="add-tile">' + I.camera + 'Камера<input type="file" accept="image/*" capture="environment" data-file="add-photo"></label>' +
+          '<label class="add-tile">' + I.image + 'Галерея<input type="file" accept="image/*" multiple data-file="add-photo"></label>' +
+        '</div>' + (s.loading ? '<p class="muted" style="display:flex;gap:8px;align-items:center;margin:0"><span class="spinner"></span>Добавляю фото…</p>' : '') + '</div>' +
+        '<p class="note" style="margin:0">Задание увидит весь класс.</p>' +
+        '<button class="btn" data-act="save-hw"' + (s.saving ? ' disabled' : '') + '>' + (s.saving ? 'Сохраняю…' : 'Сохранить') + '</button>';
+      html = sheetFrame('Что задано?', body, '<button class="link l" data-act="add-back">Назад</button>');
+    }
+  } else if (s.type === 'detail') {
+    const h = hwById(s.id);
+    if (!h) { ui.sheet = null; sheetRoot.innerHTML = ''; document.body.style.overflow = ''; return; }
+    const done = isDone(h);
+    const st = done ? {cls:'done', label:'✓ Выполнено'} : dueStatus(h.due);
+    const ps = periodsOn(h.subjectId, parse(h.due).getDay());
+    const by = h.author ? 'Записал(а) ' + authorName(h.author) : '';
+    let planSec = '';
+    if (canPlan(h)) {
+      const sug = suggestedDay(h), cur = plannedDay(h), custom = state.plan[h.id] && cur !== sug;
+      planSec = '<div class="section" style="margin:0"><div class="section-title"><h2>Когда делать</h2>' +
+        (custom ? '<button class="link" style="padding:0;font-size:13px" data-act="plan-auto" data-id="' + h.id + '">Как советует дневник</button>' : '<span class="aside">Для тебя, другим не видно</span>') +
+        '</div><div class="plan-days">' + planCandidates(h).map(c =>
+          '<button class="plan-day' + (c.date === cur ? ' on' : '') + '" data-act="plan-set" data-id="' + h.id + '" data-day="' + c.date + '" aria-pressed="' + (c.date === cur) + '"><b>' + esc(cap(dayWord(c.date))) + (c.date === sug ? ' <em>советую</em>' : '') + '</b><span>' + esc(loadLabel(c)) + '</span></button>'
+        ).join('') + '</div></div>';
+    }
+    const body = '<div class="list"><div class="row" style="align-items:center"><span class="row-main"><span class="row-title">' + subjectTitle(h.subjectId) + '</span>' + (ps.length ? '<span class="row-meta time">' + esc(periodsLabel(ps)) + '</span>' : '') + '</span><span class="pill ' + st.cls + '">' + st.label + '</span></div>' +
+      '<div class="row" style="align-items:center"><label for="detail-due" class="row-main" style="font-weight:500">Срок сдачи</label><input type="date" class="field" style="width:auto" id="detail-due" data-hw-due="' + h.id + '" value="' + h.due + '"></div></div>' +
+      '<div class="section" style="margin:0"><div class="section-title"><h2>Что задано</h2><span class="aside" id="saved-note">' + esc(by) + '</span></div><textarea class="field" data-hw-text="' + h.id + '">' + esc(h.text) + '</textarea></div>' + planSec +
+      '<div class="section" style="margin:0"><div class="section-title"><h2>Фотографии</h2></div><div class="photos">' +
+        (h.photos || []).map(pid => '<div class="ph"><img src="' + photoUrl(pid) + '" alt="Фото задания" loading="lazy"><button class="open" data-act="view-photo" data-pid="' + esc(pid) + '" aria-label="Открыть фото"></button><button class="x" data-act="hw-photo-del" data-pid="' + esc(pid) + '" aria-label="Удалить фото">' + I.x + '</button></div>').join('') +
+        '<label class="add-tile">' + I.camera + 'Камера<input type="file" accept="image/*" capture="environment" data-file="hw-photo"></label>' +
+        '<label class="add-tile">' + I.image + 'Галерея<input type="file" accept="image/*" multiple data-file="hw-photo"></label>' +
+      '</div>' + (s.loading ? '<p class="muted" style="display:flex;gap:8px;align-items:center;margin:0"><span class="spinner"></span>Добавляю фото…</p>' : '') + '</div>' +
+      '<div class="stack"><button class="btn ' + (done ? 'secondary' : '') + '" data-act="toggle" data-id="' + h.id + '">' + (done ? 'Отменить выполнение' : I.check + 'Отметить выполненным') + '</button>' +
+      (s.confirmDelete
+        ? '<div class="banner" style="background:var(--red-soft);margin:0;flex-direction:column"><b>Удалить это задание для всего класса вместе с фото?</b><div class="btn-row" style="width:100%"><button class="btn danger" style="background:var(--red);color:#fff" data-act="hw-delete-yes">Удалить</button><button class="btn secondary" data-act="hw-delete-no">Отмена</button></div></div>'
+        : '<button class="btn danger" data-act="hw-delete">Удалить задание</button>') + '</div>';
+    html = sheetFrame('Домашнее задание', body, '<span></span>', '<button class="link" data-act="close">Готово</button>');
+  } else if (s.type === 'pick') {
+    html = sheetFrame('Выбрать предмет', subjectPickList('pick-subject'), '<button class="link l" data-act="close">Отмена</button>');
+  } else if (s.type === 'confirm') {
+    html = sheetFrame(s.title, '<p style="margin:0" class="muted">' + esc(s.text) + '</p><div class="stack"><button class="btn" style="background:var(--red);color:#fff" data-act="confirm-yes">' + esc(s.label) + '</button><button class="btn secondary" data-act="close">Отмена</button></div>', '<span></span>');
+  } else if (s.type === 'info') {
+    html = sheetFrame(s.title, s.html + '<button class="btn" data-act="close">Понятно</button>', '<span></span>');
+  } else if (s.type === 'password') {
+    html = sheetFrame('Сменить пароль', '<form id="pass-form" class="stack" novalidate>' +
+      '<label class="field-label" for="old-pass">Старый пароль</label><input class="field" id="old-pass" type="password" autocomplete="current-password">' +
+      '<label class="field-label" for="new-pass">Новый пароль</label><input class="field" id="new-pass" type="password" autocomplete="new-password" placeholder="Не короче 6 символов">' +
+      '<label class="field-label" for="new-pass2">Повтори новый пароль</label><input class="field" id="new-pass2" type="password" autocomplete="new-password">' +
+      (s.error ? '<p class="err" style="margin:0" role="alert">' + esc(s.error) + '</p>' : '') +
+      '<button class="btn" type="submit"' + (s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Сохраняю…' : 'Сменить пароль') + '</button></form>', '<button class="link l" data-act="close">Отмена</button>');
+  } else if (s.type === 'photo') {
+    html = sheetFrame('Фото', '<img class="big-photo" src="' + photoUrl(s.pid) + '" alt="Фото задания">', '<span></span>', '<button class="link" data-act="close">Закрыть</button>');
+  }
+  const scrollTop = sheetRoot.querySelector('.sheet-body')?.scrollTop || 0;
+  sheetRoot.innerHTML = html;
+  const bodyEl = sheetRoot.querySelector('.sheet-body'); if (bodyEl) bodyEl.scrollTop = scrollTop;
+}
+
+/* ---------- export / import ---------- */
+async function exportData() {
+  showToast('Готовлю файл…');
+  const photos = {};
+  for (const h of state.homeworks) for (const pid of h.photos || []) {
+    try { const r = await fetch(photoUrl(pid)); if (r.ok) photos[pid] = await readAsDataURL(await r.blob()); } catch (e) {}
+  }
+  const json = JSON.stringify({format:'dnevnik-dz-backup', version:3, exportedAt:new Date().toISOString(),
+    schedule:scheduleBody(), homeworks:state.homeworks.map(h => ({id:h.id, createdAt:h.createdAt, author:h.author, ...hwBody(h)})), photos}, null, 2);
+  const url = URL.createObjectURL(new Blob([json], {type:'application/json'}));
+  const a = document.createElement('a'); a.href = url; a.download = 'dnevnik-dz-' + ymd(today()) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  showToast('Резервная копия сохранена в «Загрузки»');
+}
+async function importFile(file) {
+  let obj;
+  try { obj = JSON.parse(await file.text()); } catch (e) { showToast('Это не файл резервной копии'); return; }
+  if (obj?.format !== 'dnevnik-dz-backup') { showToast('Это не файл резервной копии Дневника ДЗ'); return; }
+  const schedule = obj.schedule || {subjects:obj.state?.subjects, lessons:obj.state?.lessons, bells:obj.state?.settings};
+  const homeworks = obj.homeworks || obj.state?.homeworks || [];
+  const n = homeworks.length;
+  openSheet({type:'confirm', title:'Импорт данных', text:'Расписание и задания всего класса заменятся данными из файла (' + n + ' ' + plural(n, 'задание', 'задания', 'заданий') + ').', label:'Заменить данные', fn:async () => {
+    try {
+      const r = await api('POST', '/api/admin/import', {schedule, homeworks, photos:obj.photos || {}});
+      showToast('Импортировано заданий: ' + r.homeworks);
+      ui.page = null; ui.tab = 'today'; refresh();
+    } catch (e) { showToast(errText(e, 'Не удалось импортировать.')); }
+  }});
+}
+
+/* ---------- actions ---------- */
+function goPage(page) { ui.page = page; render(); window.scrollTo(0, 0); }
+function startAdd(preset = {}) {
+  if (preset.subjectId && preset.due) openSheet({type:'add', step:'details', subjectId:preset.subjectId, due:preset.due, text:'', photos:[]});
+  else openSheet({type:'add', step:'subject', presetDue:preset.presetDue || null, subjectId:null, due:null, text:'', photos:[]});
+}
+function afterSubjectPicked(id) {
+  const sh = ui.sheet; sh.subjectId = id;
+  if (sh.presetDue) { sh.due = sh.presetDue; sh.step = 'details'; } else sh.step = 'date';
+  renderSheet();
+}
+function applyPick(subjectId) {
+  const s = ui.sheet;
+  if (s.mode === 'add') addLesson(s.wd, subjectId);
+  else if (s.mode === 'slot') addLesson(s.wd, subjectId, s.period);
+  else { const l = state.lessons.find(x => x.id === s.lessonId); if (l) l.subjectId = subjectId; }
+  saveSchedule(); closeSheet(); render();
+}
+function captureAddText() { const t = document.getElementById('hw-text'); if (t && ui.sheet?.type === 'add') ui.sheet.text = t.value; }
+
+const actions = {
+  tab: el => { ui.tab = el.dataset.tab; ui.page = null; render(); window.scrollTo(0, 0); },
+  page: el => goPage({name:el.dataset.page, wd:Number(el.dataset.wd) || undefined}),
+  back: () => {
+    const p = ui.page;
+    if (p?.name === 'day' || p?.name === 'subjects') ui.tab = 'schedule';
+    if (p?.name === 'class') ui.tab = 'settings';
+    goPage(null);
+  },
+  retry: () => { store.ready = false; render(); refresh(); },
+  'auth-mode': el => { ui.authMode = el.dataset.mode; ui.authError = null; ui.authName = document.getElementById('auth-name')?.value || ui.authName; render(); document.getElementById('auth-name')?.focus(); },
+  logout: async () => {
+    try { await api('POST', '/api/logout'); } catch (e) {}
+    closeLive(); store.authed = false; store.me = null; ui.page = null; ui.tab = 'today'; ui.authMode = 'login'; ui.authError = null;
+    state.done = {}; render();
+  },
+  'change-pass': () => openSheet({type:'password'}),
+  'reset-pass': el => {
+    const id = el.dataset.id, name = store.users[id];
+    openSheet({type:'confirm', title:'Сбросить пароль', text:'Ученик «' + name + '» получит новый временный пароль, старый перестанет работать.', label:'Сбросить', fn:async () => {
+      try {
+        const r = await api('POST', '/api/admin/reset', {userId:id});
+        openSheet({type:'info', title:'Новый пароль', html:'<p style="margin:0">Временный пароль для «' + esc(name) + '»:</p><p style="margin:0;font-family:var(--display);font-size:32px;letter-spacing:.12em;user-select:all" class="time">' + esc(r.password) + '</p><p class="muted" style="margin:0">Передай его ученику. После входа он сможет сменить пароль в настройках.</p>'});
+      } catch (e) { showToast(errText(e, 'Не удалось сбросить пароль.')); }
+    }});
+  },
+  'goto-schedule': () => { ui.tab = 'schedule'; goPage(null); },
+  add: () => startAdd(),
+  'add-for': el => startAdd({subjectId:el.dataset.subject, due:el.dataset.due}),
+  'add-on-day': el => startAdd({presetDue:el.dataset.due}),
+  toggle: el => toggleDone(el.dataset.id),
+  'open-hw': el => openSheet({type:'detail', id:el.dataset.id}),
+  close: () => closeSheet(),
+  manual: () => { const d = {}; SCHOOL_DAYS.forEach(wd => { d[wd] = ['']; }); goPage({name:'review', draft:d}); },
+  week: el => { ui.weekStart = addDays(ui.weekStart, 7 * Number(el.dataset.dir)); ui.calSel = ymd(ui.weekStart); render(); },
+  'cal-sel': el => { ui.calSel = el.dataset.day; render(); },
+  'cal-today': () => { ui.weekStart = null; render(); },
+  theme: el => { state.settings.theme = el.dataset.themeVal; applyTheme(); savePrefs(); render(); },
+  // schedule
+  'lesson-move': el => { moveLesson(el.dataset.id, Number(el.dataset.dir)); saveSchedule(); render(); },
+  'lesson-del': el => { removeLesson(el.dataset.id); saveSchedule(); render(); showToast('Урок убран'); },
+  'add-lesson': el => openSheet({type:'pick', mode:'add', wd:Number(el.dataset.wd)}),
+  'fill-slot': el => openSheet({type:'pick', mode:'slot', wd:Number(el.dataset.wd), period:Number(el.dataset.p)}),
+  'change-lesson': el => openSheet({type:'pick', mode:'change', lessonId:el.dataset.id}),
+  'pick-subject': el => applyPick(el.dataset.id),
+  'pick-subject-new': () => { const s = findOrCreateSubject(document.getElementById('new-subject')?.value); if (s) applyPick(s.id); },
+  'subject-add-page': () => { const s = findOrCreateSubject(document.getElementById('new-subject-page')?.value); if (s) { saveSchedule(); render(); showToast('Предмет добавлен'); } },
+  'subject-del': el => {
+    const s = subjectById(el.dataset.id); if (!s) return;
+    openSheet({type:'confirm', title:'Удалить предмет', text:'«' + s.name + '» исчезнет из расписания, а все задания по нему удалятся у всего класса.', label:'Удалить предмет', fn:() => { deleteSubject(s.id); render(); showToast('Предмет удалён'); }});
+  },
+  // manual schedule
+  'draft-add': el => { ui.page.draft[el.dataset.wd].push(''); render(); const inputs = app.querySelectorAll('[data-draft^="' + el.dataset.wd + ':"]'); inputs[inputs.length - 1]?.focus(); },
+  'draft-del': el => { ui.page.draft[el.dataset.wd].splice(Number(el.dataset.i), 1); render(); },
+  'save-schedule': () => {
+    const d = ui.page.draft;
+    if (!SCHOOL_DAYS.some(wd => (d[wd] || []).some(x => String(x).trim()))) { showToast('Добавь хотя бы один урок'); return; }
+    replaceSchedule(d); saveSchedule();
+    ui.page = null; ui.tab = 'today'; render(); window.scrollTo(0, 0);
+    showToast('Расписание сохранено');
+  },
+  // add homework
+  'pick-add': el => afterSubjectPicked(el.dataset.id),
+  'pick-add-new': () => { const s = findOrCreateSubject(document.getElementById('new-subject')?.value); if (s) { saveSchedule(); afterSubjectPicked(s.id); } },
+  'pick-date': el => { ui.sheet.due = el.dataset.due; ui.sheet.step = 'details'; renderSheet(); },
+  'custom-date': () => { const v = document.getElementById('custom-due')?.value; if (!v) { showToast('Выбери дату'); return; } ui.sheet.due = v; ui.sheet.step = 'details'; renderSheet(); },
+  'add-back': () => { const s = ui.sheet; captureAddText(); s.step = s.step === 'details' ? 'date' : 'subject'; renderSheet(); },
+  'add-photo-del': el => { captureAddText(); ui.sheet.photos.splice(Number(el.dataset.i), 1); renderSheet(); },
+  'save-hw': async () => {
+    captureAddText();
+    const s = ui.sheet;
+    if (s.saving) return;
+    if (!s.text.trim() && !s.photos.length) { showToast('Напиши, что задано, или добавь фото'); return; }
+    s.saving = true; renderSheet();
+    const ids = [];
+    for (const p of s.photos) { const pid = uid(); if (await savePhoto(pid, p)) ids.push(pid); }
+    const h = {id:uid(), subjectId:s.subjectId, due:s.due, text:s.text.trim(), createdAt:new Date().toISOString(), author:store.me?.id, photos:ids};
+    state.homeworks.push(h);
+    saveHw(h); closeSheet(); render(); showToast('Задание сохранено');
+  },
+  // detail
+  'plan-set': el => { state.plan[el.dataset.id] = el.dataset.day; savePrefs(); renderSheet(); render(); showToast('Сделать ' + dayWord(el.dataset.day)); },
+  'plan-auto': el => { delete state.plan[el.dataset.id]; savePrefs(); renderSheet(); render(); },
+  'hw-delete': () => { ui.sheet.confirmDelete = true; renderSheet(); },
+  'hw-delete-no': () => { ui.sheet.confirmDelete = false; renderSheet(); },
+  'hw-delete-yes': () => { deleteHomework(ui.sheet.id); closeSheet(); render(); showToast('Задание удалено'); },
+  'hw-photo-del': el => { const h = hwById(ui.sheet.id); if (!h) return; h.photos = h.photos.filter(p => p !== el.dataset.pid); saveHw(h); renderSheet(); render(); },
+  'view-photo': el => openSheet({type:'photo', pid:el.dataset.pid, back:ui.sheet}),
+  'confirm-yes': async () => { const fn = ui.sheet.fn; closeSheet(); await fn(); },
+  // settings
+  export: () => exportData(),
+  'clear-done': () => {
+    const n = Object.keys(state.done).length;
+    if (!n) { showToast('История уже пуста'); return; }
+    openSheet({type:'confirm', title:'Очистить мою историю', text:'Снимутся все твои отметки «Выполнено». Сами задания останутся у всего класса.', label:'Очистить', fn:() => { state.done = {}; savePrefs(); render(); showToast('История очищена'); }});
+  },
+  'clear-old': () => {
+    const before = ymd(addDays(today(), -30));
+    const n = state.homeworks.filter(h => h.due < before).length;
+    if (!n) { showToast('Заданий старше месяца нет'); return; }
+    openSheet({type:'confirm', title:'Удалить старые задания', text:'Удалятся ' + n + ' ' + plural(n, 'задание', 'задания', 'заданий') + ', срок которых прошёл больше месяца назад. У всего класса.', label:'Удалить', fn:async () => {
+      try { await api('POST', '/api/admin/clear-old', {before}); showToast('Старые задания удалены'); refresh(); } catch (e) { showToast(errText(e, 'Не удалось удалить.')); }
+    }});
+  },
+  wipe: () => openSheet({type:'confirm', title:'Удалить все данные', text:'Удалятся расписание, предметы, все задания и фото у всего класса. Учётные записи останутся. Отменить нельзя.', label:'Удалить всё', fn:async () => {
+    try { await api('POST', '/api/admin/wipe'); ui.page = null; ui.tab = 'today'; showToast('Все данные удалены'); refresh(); } catch (e) { showToast(errText(e, 'Не удалось удалить.')); }
+  }})
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el || el.tagName === 'LABEL') return;
+  const act = el.dataset.act;
+  if (act === 'close' && ui.sheet?.type === 'photo' && ui.sheet.back) { e.preventDefault(); openSheet(ui.sheet.back); return; }
+  const fn = actions[act];
+  if (fn) { e.preventDefault(); fn(el, e); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && ui.sheet) { closeSheet(); return; }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"][data-act]')) { e.preventDefault(); e.target.click(); }
+  if (e.key === 'Enter' && e.target.id === 'new-subject') { e.preventDefault(); actions[(ui.sheet?.type === 'add' ? 'pick-add' : 'pick-subject') + '-new'](); }
+  if (e.key === 'Enter' && e.target.id === 'new-subject-page') { e.preventDefault(); actions['subject-add-page'](); }
+  if (e.key === 'Enter' && e.target.matches('[data-rename],[data-room]')) e.target.blur();
+});
+
+document.addEventListener('submit', async e => {
+  if (e.target.id === 'auth-form') {
+    e.preventDefault();
+    const reg = ui.authMode === 'register';
+    const name = document.getElementById('auth-name').value.trim();
+    const pass = document.getElementById('auth-pass').value;
+    ui.authName = name;
+    if (name.length < 2) { ui.authError = 'Введи имя, не короче 2 символов.'; render(); return; }
+    if (!pass) { ui.authError = 'Введи пароль.'; render(); return; }
+    if (reg && pass !== document.getElementById('auth-pass2').value) { ui.authError = 'Пароли не совпадают.'; render(); return; }
+    ui.authBusy = true; ui.authError = null; render();
+    try {
+      await api('POST', reg ? '/api/register' : '/api/login', {name, password:pass});
+      ui.authBusy = false; ui.tab = 'today'; ui.page = null;
+      await refresh();
+      showToast(reg ? 'Добро пожаловать, ' + name + '!' : 'Привет, ' + (store.me?.name || name) + '!');
+    } catch (err) {
+      ui.authBusy = false;
+      ui.authError = errText(err, reg ? 'Не получилось зарегистрироваться.' : 'Не получилось войти.');
+      render();
+    }
+  } else if (e.target.id === 'pass-form') {
+    e.preventDefault();
+    const s = ui.sheet;
+    const oldPassword = document.getElementById('old-pass').value, newPassword = document.getElementById('new-pass').value;
+    if (newPassword !== document.getElementById('new-pass2').value) { s.error = 'Новые пароли не совпадают.'; renderSheet(); return; }
+    s.busy = true; s.error = null; renderSheet();
+    try { await api('POST', '/api/password', {oldPassword, newPassword}); closeSheet(); showToast('Пароль изменён'); }
+    catch (err) { s.busy = false; s.error = errText(err, 'Не удалось сменить пароль.'); renderSheet(); }
+  }
+});
+
+const textTimers = new Map();
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.draft) { const [wd, i] = t.dataset.draft.split(':'); ui.page.draft[wd][Number(i)] = t.value; return; }
+  if (t.dataset.hwText) {
+    const id = t.dataset.hwText, h = hwById(id); if (!h) return;
+    const value = t.value;
+    h.text = value; pendingText.set(id, value);
+    clearTimeout(textTimers.get(id));
+    textTimers.set(id, setTimeout(() => {
+      const cur = hwById(id); if (!cur) return;
+      cur.text = value;
+      saveHw(cur).then(() => { if (pendingText.get(id) === value) pendingText.delete(id); });
+      render();
+      const n = document.getElementById('saved-note'); if (n) n.textContent = 'Сохранено';
+    }, 600));
+  }
+});
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.dataset.rename) {
+    const s = subjectById(t.dataset.rename); const v = t.value.trim().replace(/\s+/g, ' ');
+    if (s && v && v !== s.name) { s.name = v; saveSchedule(); showToast('Переименовано'); }
+    else if (s) t.value = s.name;
+    return;
+  }
+  if (t.dataset.room) { const l = state.lessons.find(x => x.id === t.dataset.room); if (l && l.room !== t.value.trim()) { l.room = t.value.trim(); saveSchedule(); } return; }
+  if (t.dataset.hwDue) { const h = hwById(t.dataset.hwDue); if (h && t.value) { h.due = t.value; saveHw(h); render(); renderSheet(); } return; }
+  const setting = t.dataset.setting;
+  if (setting === 'remind') { state.settings.remind = t.checked; savePrefs(); render(); return; }
+  if (setting === 'remindTime') { if (t.value) { state.settings.remindTime = t.value; savePrefs(); } return; }
+  if (setting === 'dayStart') { if (t.value) { state.settings.dayStart = t.value; saveSchedule(); render(); } return; }
+  if (setting === 'lessonLen' || setting === 'breakLen') {
+    const v = Math.round(Number(t.value));
+    const [lo, hi] = setting === 'lessonLen' ? [20, 90] : [0, 60];
+    if (Number.isFinite(v) && v >= lo && v <= hi) { state.settings[setting] = v; saveSchedule(); render(); }
+    else { showToast('Введи число от ' + lo + ' до ' + hi); t.value = state.settings[setting]; }
+    return;
+  }
+  const kind = t.dataset.file;
+  if (!kind || !t.files?.length) return;
+  const files = [...t.files]; t.value = '';
+  if (kind === 'import') { importFile(files[0]); return; }
+  if (kind === 'add-photo') {
+    captureAddText(); ui.sheet.loading = true; renderSheet();
+    for (const f of files) { try { ui.sheet.photos.push(await compressImage(f)); } catch (err) { showToast('Не удалось открыть изображение'); } }
+    ui.sheet.loading = false; renderSheet(); return;
+  }
+  if (kind === 'hw-photo') {
+    const h = hwById(ui.sheet?.id); if (!h) return;
+    ui.sheet.loading = true; renderSheet();
+    for (const f of files) {
+      try { const d = await compressImage(f); const pid = uid(); if (await savePhoto(pid, d)) h.photos.push(pid); }
+      catch (err) { showToast('Не удалось открыть изображение'); }
+    }
+    if (ui.sheet) ui.sheet.loading = false;
+    saveHw(h); renderSheet(); render();
+  }
+});
+
+/* ---------- boot ---------- */
+state.settings.theme = lsGet(THEME_KEY) || 'system';
+applyTheme();
+render();
+setInterval(() => { if (store.authed && state.settings.remind && ui.tab === 'today' && !ui.page && !ui.sheet) render(); }, 60000);
+refresh();
+})();
+</script>
+</body>
+</html>

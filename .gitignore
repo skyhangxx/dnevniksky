@@ -1,0 +1,16 @@
+# Данные дневника: учётные записи, пароли, задания, фото
+data/
+
+# Зависимости и логи
+node_modules/
+npm-debug.log*
+*.log
+
+# Настройки редактора
+.vscode/
+.idea/
+
+# Системные файлы
+Thumbs.db
+desktop.ini
+.DS_Store
