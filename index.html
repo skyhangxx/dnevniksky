@@ -132,7 +132,7 @@ textarea.field{min-height:130px;resize:vertical}
 .week-days{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
 .wd{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 0;border-radius:10px}
 .wd small{font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--muted)}
-.wd span{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-variant-numeric:tabular-nums;position:relative}
+.wd span{width:100%;max-width:36px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-weight:600;font-variant-numeric:tabular-nums;position:relative}
 .wd.today span{color:var(--accent)}
 .wd.sel span{background:var(--accent);color:var(--accent-ink)}
 .wd i{width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.7}
@@ -181,7 +181,7 @@ textarea.field{min-height:130px;resize:vertical}
 .ph .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;display:grid;place-items:center;padding:0}
 .add-tile{aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--faint);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-size:12px;cursor:pointer;background:none}
 .add-tile:hover{border-color:var(--accent);color:var(--accent)}
-.add-tile input{display:none}
+.add-tile{position:relative}
 .big-photo{width:100%;border-radius:12px;display:block}
 
 /* onboarding */
@@ -192,7 +192,7 @@ textarea.field{min-height:130px;resize:vertical}
 .preview-head{padding:10px 14px;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line)}
 .stack{display:flex;flex-direction:column;gap:10px}
 label.btn{cursor:pointer}
-label.btn input{display:none}
+label.btn{position:relative}
 .spinner{width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:spin .8s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 .err{color:var(--red);font-size:14px}
@@ -236,6 +236,35 @@ label.btn input{display:none}
 input.field.num-field{width:88px;flex:0 0 88px;text-align:center}
 .row>label.row-main{min-width:0}
 .sub-label{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:4px 4px 0;margin:0}
+/* ---------- mobile ---------- */
+/* Hidden but still in the page, so tapping its label opens the file picker on every phone. */
+.vh{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;opacity:0}
+/* The page never scrolls sideways. */
+html,body{max-width:100%;overflow-x:hidden}
+body{overscroll-behavior-x:none;touch-action:manipulation}
+/* iOS Safari only delivers taps on non-button elements that look clickable. */
+[data-act],label,.tap{cursor:pointer}
+.row-main,.row-title{min-width:0;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+.week-days{min-width:0}
+/* Blocks inside a sheet keep their full height; the sheet body scrolls instead of squashing them. */
+.sheet-body>*{flex-shrink:0}
+@media (max-width:820px){
+  /* iOS zooms into fields with text under 16px; the zoomed page then slides left and right. */
+  input,textarea,select{font-size:16px!important}
+}
+@media (max-width:420px){
+  .num{width:34px}
+  .ruled::before{left:34px}
+  .room-input{width:58px;padding-inline:4px}
+  .lesson-ctrl button{width:28px;height:32px}
+  .week{padding:8px 2px;gap:0}
+  .week .icon-btn{width:30px;height:36px;flex-shrink:0}
+  .head h1{font-size:23px}
+  .hero h1{font-size:26px}
+  .tab{font-size:10px}
+  .tabbar-inner{padding-inline:0}
+  .sheet-body{padding-inline:12px}
+}
 </style>
 </head>
 <body>
@@ -333,7 +362,7 @@ const hasSchedule = () => state.lessons.length > 0;
 const isDone = h => !!state.done[h.id];
 const store = {ready:false, authed:false, offline:false, setupError:null, me:null, uid:null, email:null, isAdmin:false, users:{}, invite:''};
 const pendingText = new Map();
-const ui = {tab:'today', page:null, sheet:null, weekStart:null, calSel:null, authMode:'login', authName:'', authError:null, authBusy:false};
+const ui = {tab:'today', page:null, sheet:null, weekStart:null, calSel:null, authName:'', authInvite:'', authError:null, authBusy:false, needInvite:false, needLegacyPass:false};
 
 const scheduleBody = () => ({subjects:state.subjects, lessons:state.lessons,
   bells:{dayStart:state.settings.dayStart, lessonLen:state.settings.lessonLen, breakLen:state.settings.breakLen}});
@@ -377,6 +406,11 @@ async function nameToEmail(name) {
   const n = String(name).trim().replace(/\s+/g, ' ').toLowerCase();
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(n));
   return 'u' + [...new Uint8Array(buf)].slice(0, 16).map(b => b.toString(16).padStart(2, '0')).join('') + '@' + EMAIL_DOMAIN;
+}
+async function namePassword(name) {
+  const n = String(name).trim().replace(/\s+/g, ' ').toLowerCase();
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('dnevnik-dz:' + n));
+  return 'n-' + [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /* One request at a time per record, so edits arrive in order. */
@@ -753,21 +787,20 @@ function daySummary(dateStr) {
 const offlineBanner = () => store.offline ? '<div class="banner" style="background:var(--red-soft)"><div><b>Нет связи с сервером</b>Изменения не сохраняются. Проверь, что сервер запущен на компьютере, и обнови страницу.</div></div>' : '';
 
 /* ---------- screens ---------- */
+/* Sign-in is by name only. Supabase still needs a password, so it is derived
+   from the name: typing the same name on any device opens the same account.
+   Accounts made earlier with a real password type it once; after that the
+   account is switched to name-only sign-in. */
 function screenAuth() {
-  const reg = ui.authMode === 'register';
-  return '<div class="hero"><h1>Дневник ДЗ</h1><p>' + (reg ? 'Придумай имя и пароль. Под этим именем тебя увидят одноклассники.' : 'Войди, чтобы видеть расписание и домашние задания класса.') + '</p></div>' +
-    '<div class="seg" style="grid-template-columns:1fr 1fr;margin-block-end:18px" role="group" aria-label="Вход или регистрация">' +
-      '<button data-act="auth-mode" data-mode="login" class="' + (reg ? '' : 'on') + '" aria-pressed="' + !reg + '">Вход</button>' +
-      '<button data-act="auth-mode" data-mode="register" class="' + (reg ? 'on' : '') + '" aria-pressed="' + reg + '">Регистрация</button></div>' +
+  return '<div class="hero"><h1>Дневник ДЗ</h1><p>Напиши своё имя. Под ним тебя увидят одноклассники. Дневник запомнит тебя на этом устройстве, и больше входить не придётся.</p></div>' +
     '<form id="auth-form" class="stack" novalidate>' +
-      '<label class="field-label" for="auth-name">Имя</label><input class="field" id="auth-name" name="username" autocomplete="username" maxlength="40" value="' + esc(ui.authName) + '" placeholder="Например, Ильназ">' +
-      '<label class="field-label" for="auth-pass">Пароль</label><input class="field" id="auth-pass" type="password" autocomplete="' + (reg ? 'new-password' : 'current-password') + '"' + (reg ? ' placeholder="Не короче 6 символов"' : '') + '>' +
-      (reg ? '<label class="field-label" for="auth-pass2">Повтори пароль</label><input class="field" id="auth-pass2" type="password" autocomplete="new-password">' +
-        '<label class="field-label" for="auth-invite">Код класса</label><input class="field" id="auth-invite" autocomplete="off" maxlength="40" placeholder="Если администратор его задал">' : '') +
+      '<label class="field-label" for="auth-name">Имя</label><input class="field" id="auth-name" name="username" autocomplete="username" maxlength="40" value="' + esc(ui.authName) + '" placeholder="Например, Маша Иванова" autocapitalize="words">' +
+      (ui.needInvite ? '<label class="field-label" for="auth-invite">Код класса</label><input class="field" id="auth-invite" autocomplete="off" maxlength="40" value="' + esc(ui.authInvite || '') + '" placeholder="Спроси у администратора дневника">' : '') +
+      (ui.needLegacyPass ? '<label class="field-label" for="auth-legacy">Старый пароль</label><input class="field" id="auth-legacy" type="password" autocomplete="current-password">' : '') +
       (ui.authError ? '<p class="err" style="margin:0" role="alert">' + esc(ui.authError) + '</p>' : '') +
-      '<button class="btn" type="submit"' + (ui.authBusy ? ' disabled' : '') + '>' + (ui.authBusy ? 'Подожди…' : reg ? 'Зарегистрироваться' : 'Войти') + '</button>' +
+      '<button class="btn" type="submit"' + (ui.authBusy ? ' disabled' : '') + '>' + (ui.authBusy ? 'Подожди…' : 'Войти') + '</button>' +
     '</form>' +
-    '<p class="note" style="margin-top:18px">' + (reg ? 'Первый, кто зарегистрируется, становится администратором дневника.' : 'Забыл пароль? Попроси администратора дневника сбросить его.') + '</p>';
+    '<p class="note" style="margin-top:18px">Если такого имени ещё нет, дневник создаст его. Первый вошедший становится администратором.</p>';
 }
 
 function screenToday() {
@@ -889,15 +922,6 @@ function pageHistory() {
   return out + keys.map(k => '<section class="section"><div class="section-title"><h2>' + esc(longDate(k)) + '</h2></div><div class="list">' + groups[k].map(h => hwRow(h, {noStatus:true})).join('') + '</div></section>').join('');
 }
 
-function pageClass() {
-  const ids = Object.keys(store.users).filter(id => id !== store.me?.id).sort((a, b) => store.users[a].localeCompare(store.users[b], 'ru'));
-  let out = '<button class="back" data-act="back">' + I.left + 'Настройки</button>';
-  out += '<header class="head"><div><h1>Ученики</h1><p class="sub">Все, кто зарегистрирован в дневнике</p></div></header><section class="section">';
-  out += ids.length ? '<div class="list">' + ids.map(id => '<div class="row" style="align-items:center">' + I.user + '<span class="row-main" style="font-weight:500">' + esc(store.users[id]) + '</span><button class="link" data-act="reset-pass" data-id="' + id + '">Сбросить пароль</button></div>').join('') + '</div>'
-    : '<div class="list"><div class="empty"><b>Пока только ты</b>Когда одноклассники зарегистрируются, они появятся здесь.</div></div>';
-  return out + '<p class="note">Сброс выдаёт новый временный пароль из 6 цифр. Передай его ученику, и он сможет войти и сменить пароль.</p></section>';
-}
-
 function screenSettings() {
   const s = state.settings, admin = store.isAdmin;
   let out = '<header class="head"><div><h1>Настройки</h1></div></header>';
@@ -905,8 +929,6 @@ function screenSettings() {
 
   out += '<section class="section"><div class="section-title"><h2>Учётная запись</h2></div><div class="list">' +
     '<div class="row" style="align-items:center"><span style="color:var(--accent)">' + I.user + '</span><span class="row-main"><span style="font-weight:600">' + esc(store.me?.name || '') + '</span><span class="muted" style="font-size:13px">' + (admin ? 'Администратор дневника' : 'Ученик') + '</span></span><button class="link" data-act="logout">Выйти</button></div>' +
-    '<button class="row action-row" data-act="change-pass">' + I.key + '<span class="row-main">Сменить пароль</span><span class="chev">' + I.chev + '</span></button>' +
-    (admin ? '<button class="row action-row" data-act="page" data-page="class">' + I.people + '<span class="row-main">Ученики и сброс паролей</span><span class="chev">' + I.chev + '</span></button>' : '') +
     '<button class="row action-row danger" data-act="delete-account">' + I.trash + '<span class="row-main">Удалить мою учётную запись</span></button>' +
     '</div></section>';
 
@@ -941,7 +963,7 @@ function screenSettings() {
 
   out += '<section class="section"><div class="section-title"><h2>Данные</h2></div><div class="list">' +
     '<button class="row action-row" data-act="export">' + I.down + '<span class="row-main">Экспортировать данные (резервная копия)</span></button>' +
-    (admin ? '<label class="row action-row tap" style="cursor:pointer">' + I.up + '<span class="row-main">Импортировать данные</span><input type="file" accept="application/json,.json" data-file="import" hidden></label>' +
+    (admin ? '<label class="row action-row tap" style="cursor:pointer">' + I.up + '<span class="row-main">Импортировать данные</span><input type="file" accept="application/json,.json" data-file="import" class="vh"></label>' +
       '<button class="row action-row danger" data-act="clear-old">' + I.trash + '<span class="row-main">Удалить задания старше месяца</span></button>' +
       '<button class="row action-row danger" data-act="wipe">' + I.trash + '<span class="row-main">Удалить все данные</span></button>' : '') +
     '</div>' + (admin ? '<p class="note">Импорт и удаление меняют дневник для всего класса, поэтому доступны только администратору.</p>' : '') + '</section>';
@@ -985,7 +1007,6 @@ function render() {
   else if (p?.name === 'day') html = pageDay(p.wd);
   else if (p?.name === 'subjects') html = pageSubjects();
   else if (p?.name === 'history') html = pageHistory();
-  else if (p?.name === 'class' && store.isAdmin) html = pageClass();
   else html = {today:screenToday, calendar:screenCalendar, schedule:screenSchedule, settings:screenSettings}[ui.tab]();
 
   if (tabs) {
@@ -1054,8 +1075,8 @@ function renderSheet() {
         '<div class="section" style="margin:0"><div class="section-title"><h2>Что задано?</h2></div><textarea class="field" id="hw-text" placeholder="№1245, 1247&#10;Повторить производную">' + esc(s.text || '') + '</textarea></div>' +
         '<div class="section" style="margin:0"><div class="section-title"><h2>Фотографии</h2></div><div class="photos">' +
           (s.photos || []).map((p, i) => '<div class="ph"><img src="' + p + '" alt="Фото ' + (i + 1) + '"><button class="x" data-act="add-photo-del" data-i="' + i + '" aria-label="Убрать фото">' + I.x + '</button></div>').join('') +
-          '<label class="add-tile">' + I.camera + 'Камера<input type="file" accept="image/*" capture="environment" data-file="add-photo"></label>' +
-          '<label class="add-tile">' + I.image + 'Галерея<input type="file" accept="image/*" multiple data-file="add-photo"></label>' +
+          '<label class="add-tile">' + I.camera + 'Камера<input type="file" accept="image/*" capture="environment" data-file="add-photo" class="vh"></label>' +
+          '<label class="add-tile">' + I.image + 'Галерея<input type="file" accept="image/*" multiple data-file="add-photo" class="vh"></label>' +
         '</div>' + (s.loading ? '<p class="muted" style="display:flex;gap:8px;align-items:center;margin:0"><span class="spinner"></span>Добавляю фото…</p>' : '') + '</div>' +
         '<p class="note" style="margin:0">Задание увидит весь класс.</p>' +
         '<button class="btn" data-act="save-hw"' + (s.saving ? ' disabled' : '') + '>' + (s.saving ? 'Сохраняю…' : 'Сохранить') + '</button>';
@@ -1082,8 +1103,8 @@ function renderSheet() {
       '<div class="section" style="margin:0"><div class="section-title"><h2>Что задано</h2><span class="aside" id="saved-note">' + esc(by) + '</span></div><textarea class="field" data-hw-text="' + h.id + '">' + esc(h.text) + '</textarea></div>' + planSec +
       '<div class="section" style="margin:0"><div class="section-title"><h2>Фотографии</h2></div><div class="photos">' +
         (h.photos || []).map(pid => '<div class="ph"><img data-photo="' + esc(pid) + '" alt="Фото задания"><button class="open" data-act="view-photo" data-pid="' + esc(pid) + '" aria-label="Открыть фото"></button><button class="x" data-act="hw-photo-del" data-pid="' + esc(pid) + '" aria-label="Удалить фото">' + I.x + '</button></div>').join('') +
-        '<label class="add-tile">' + I.camera + 'Камера<input type="file" accept="image/*" capture="environment" data-file="hw-photo"></label>' +
-        '<label class="add-tile">' + I.image + 'Галерея<input type="file" accept="image/*" multiple data-file="hw-photo"></label>' +
+        '<label class="add-tile">' + I.camera + 'Камера<input type="file" accept="image/*" capture="environment" data-file="hw-photo" class="vh"></label>' +
+        '<label class="add-tile">' + I.image + 'Галерея<input type="file" accept="image/*" multiple data-file="hw-photo" class="vh"></label>' +
       '</div>' + (s.loading ? '<p class="muted" style="display:flex;gap:8px;align-items:center;margin:0"><span class="spinner"></span>Добавляю фото…</p>' : '') + '</div>' +
       '<div class="stack"><button class="btn ' + (done ? 'secondary' : '') + '" data-act="toggle" data-id="' + h.id + '">' + (done ? 'Отменить выполнение' : I.check + 'Отметить выполненным') + '</button>' +
       (s.confirmDelete
@@ -1096,13 +1117,6 @@ function renderSheet() {
     html = sheetFrame(s.title, '<p style="margin:0" class="muted">' + esc(s.text) + '</p><div class="stack"><button class="btn" style="background:var(--red);color:#fff" data-act="confirm-yes">' + esc(s.label) + '</button><button class="btn secondary" data-act="close">Отмена</button></div>', '<span></span>');
   } else if (s.type === 'info') {
     html = sheetFrame(s.title, s.html + '<button class="btn" data-act="close">Понятно</button>', '<span></span>');
-  } else if (s.type === 'password') {
-    html = sheetFrame('Сменить пароль', '<form id="pass-form" class="stack" novalidate>' +
-      '<label class="field-label" for="old-pass">Старый пароль</label><input class="field" id="old-pass" type="password" autocomplete="current-password">' +
-      '<label class="field-label" for="new-pass">Новый пароль</label><input class="field" id="new-pass" type="password" autocomplete="new-password" placeholder="Не короче 6 символов">' +
-      '<label class="field-label" for="new-pass2">Повтори новый пароль</label><input class="field" id="new-pass2" type="password" autocomplete="new-password">' +
-      (s.error ? '<p class="err" style="margin:0" role="alert">' + esc(s.error) + '</p>' : '') +
-      '<button class="btn" type="submit"' + (s.busy ? ' disabled' : '') + '>' + (s.busy ? 'Сохраняю…' : 'Сменить пароль') + '</button></form>', '<button class="link l" data-act="close">Отмена</button>');
   } else if (s.type === 'photo') {
     html = sheetFrame('Фото', '<img class="big-photo" data-photo="' + esc(s.pid) + '" alt="Фото задания">', '<span></span>', '<button class="link" data-act="close">Закрыть</button>');
   }
@@ -1186,18 +1200,15 @@ const actions = {
   back: () => {
     const p = ui.page;
     if (p?.name === 'day' || p?.name === 'subjects') ui.tab = 'schedule';
-    if (p?.name === 'class') ui.tab = 'settings';
     goPage(null);
   },
   retry: () => { store.ready = false; store.setupError = null; store.offline = false; render(); refresh(); },
-  'auth-mode': el => { ui.authMode = el.dataset.mode; ui.authError = null; ui.authName = document.getElementById('auth-name')?.value || ui.authName; render(); document.getElementById('auth-name')?.focus(); },
   logout: async () => {
     closeLive();
     try { await sb.auth.signOut(); } catch (e) {}
-    store.authed = false; store.me = null; store.isAdmin = false; store.invite = ''; ui.page = null; ui.tab = 'today'; ui.authMode = 'login'; ui.authError = null;
+    store.authed = false; store.me = null; store.isAdmin = false; store.invite = ''; ui.page = null; ui.tab = 'today'; ui.authError = null;
     state.done = {}; state.plan = {}; render();
   },
-  'change-pass': () => openSheet({type:'password'}),
   'save-invite': async () => {
     const code = (document.getElementById('invite-code')?.value || '').trim();
     try {
@@ -1211,20 +1222,11 @@ const actions = {
       await run(sb.rpc('delete_my_account'));
       closeLive();
       try { await sb.auth.signOut({scope:'local'}); } catch (e) {}
-      store.authed = false; store.me = null; store.isAdmin = false; ui.page = null; ui.tab = 'today'; ui.authMode = 'register';
+      store.authed = false; store.me = null; store.isAdmin = false; ui.page = null; ui.tab = 'today';
       state.done = {}; state.plan = {}; render();
       showToast('Учётная запись удалена');
     } catch (e) { showToast(errText(e, 'Не удалось удалить учётную запись.')); }
   }}),
-  'reset-pass': el => {
-    const id = el.dataset.id, name = store.users[id];
-    openSheet({type:'confirm', title:'Сбросить пароль', text:'Ученик «' + name + '» получит новый временный пароль, старый перестанет работать.', label:'Сбросить', fn:async () => {
-      try {
-        const password = await run(sb.rpc('admin_reset_password', {p_user:id}));
-        openSheet({type:'info', title:'Новый пароль', html:'<p style="margin:0">Временный пароль для «' + esc(name) + '»:</p><p style="margin:0;font-family:var(--display);font-size:32px;letter-spacing:.12em;user-select:all" class="time">' + esc(password) + '</p><p class="muted" style="margin:0">Передай его ученику. После входа он сможет сменить пароль в настройках.</p>'});
-      } catch (e) { showToast(errText(e, 'Не удалось сбросить пароль.')); }
-    }});
-  },
   'goto-schedule': () => { ui.tab = 'schedule'; goPage(null); },
   add: () => startAdd(),
   'add-for': el => startAdd({subjectId:el.dataset.subject, due:el.dataset.due}),
@@ -1336,50 +1338,53 @@ document.addEventListener('keydown', e => {
 document.addEventListener('submit', async e => {
   if (e.target.id === 'auth-form') {
     e.preventDefault();
-    const reg = ui.authMode === 'register';
-    const name = document.getElementById('auth-name').value.trim();
-    const pass = document.getElementById('auth-pass').value;
-    ui.authName = name;
-    if (name.length < 2) { ui.authError = 'Введи имя, не короче 2 символов.'; render(); return; }
-    if (!pass) { ui.authError = 'Введи пароль.'; render(); return; }
-    if (reg && pass !== document.getElementById('auth-pass2').value) { ui.authError = 'Пароли не совпадают.'; render(); return; }
+    const name = document.getElementById('auth-name').value.trim().replace(/\s+/g, ' ');
+    const invite = (document.getElementById('auth-invite')?.value || '').trim();
+    const legacy = document.getElementById('auth-legacy')?.value || '';
+    ui.authName = name; ui.authInvite = invite;
+    if (name.length < 2) { ui.authError = 'Напиши имя, не короче 2 символов.'; render(); return; }
+    if (ui.needLegacyPass && !legacy) { ui.authError = 'Введи старый пароль.'; render(); return; }
     ui.authBusy = true; ui.authError = null; render();
+    let created = false;
     try {
       if (!sb) throw {userMessage:'Не загрузилась библиотека Supabase. Проверь интернет и обнови страницу.'};
-      if (reg && pass.length < 6) throw {userMessage:'Пароль должен быть не короче 6 символов.'};
-      const email = await nameToEmail(name);
-      if (reg) {
-        const invite = (document.getElementById('auth-invite')?.value || '').trim();
-        const {data, error} = await sb.auth.signUp({email, password:pass, options:{data:{name:name.replace(/\s+/g, ' '), invite}}});
-        if (error) throw error;
-        if (!data.session) throw {userMessage:'Регистрация прошла, но Supabase ждёт подтверждения почты. Администратору нужно выключить его: Authentication → Sign In / Providers → Email → Confirm email.'};
-      } else {
-        const {error} = await sb.auth.signInWithPassword({email, password:pass});
-        if (error) throw error;
+      const email = await nameToEmail(name), password = await namePassword(name);
+      const isBadCreds = er => er && (er.code === 'invalid_credentials' || /Invalid login credentials/i.test(er.message || ''));
+      let res = await sb.auth.signInWithPassword({email, password});
+      if (res.error && !isBadCreds(res.error)) throw res.error;
+      if (res.error && ui.needLegacyPass) {
+        // Old account with a real password: sign in once, then switch it to name-only.
+        const old = await sb.auth.signInWithPassword({email, password:legacy});
+        if (old.error) throw isBadCreds(old.error) ? {userMessage:'Старый пароль не подходит.'} : old.error;
+        const upd = await sb.auth.updateUser({password});
+        if (upd.error && upd.error.code !== 'same_password') throw upd.error;
+      } else if (res.error) {
+        const reg = await sb.auth.signUp({email, password, options:{data:{name, invite}}});
+        if (reg.error) {
+          const m = String(reg.error.message || ''), c = reg.error.code || '';
+          if (c === 'user_already_exists' || /already registered/i.test(m)) {
+            ui.needLegacyPass = true;
+            throw {userMessage:'Это имя зарегистрировано со старым паролем. Введи его один раз, дальше вход будет только по имени.'};
+          }
+          if (c === 'unexpected_failure' || /Database error saving new user/i.test(m)) {
+            const hadCode = ui.needInvite && invite;
+            ui.needInvite = true;
+            throw {userMessage:hadCode ? 'Код класса не подходит. Спроси его у администратора дневника.' : 'Чтобы войти в первый раз, нужен код класса. Спроси его у администратора дневника.'};
+          }
+          throw reg.error;
+        }
+        if (!reg.data.session) throw {userMessage:'Supabase ждёт подтверждения почты. Администратору нужно выключить его: Authentication → Sign In / Providers → Email → Confirm email.'};
+        created = true;
       }
-      ui.authBusy = false; ui.tab = 'today'; ui.page = null;
+      ui.authBusy = false; ui.needInvite = false; ui.needLegacyPass = false; ui.authInvite = '';
+      ui.tab = 'today'; ui.page = null;
       await refresh();
-      if (store.authed) showToast(reg ? 'Добро пожаловать, ' + name + '!' : 'Привет, ' + (store.me?.name || name) + '!');
+      if (store.authed) showToast(created ? 'Добро пожаловать, ' + name + '!' : 'Привет, ' + (store.me?.name || name) + '!');
     } catch (err) {
       ui.authBusy = false;
-      ui.authError = authErrText(err, reg);
+      ui.authError = authErrText(err, true);
       render();
     }
-  } else if (e.target.id === 'pass-form') {
-    e.preventDefault();
-    const s = ui.sheet;
-    const oldPassword = document.getElementById('old-pass').value, newPassword = document.getElementById('new-pass').value;
-    if (newPassword !== document.getElementById('new-pass2').value) { s.error = 'Новые пароли не совпадают.'; renderSheet(); return; }
-    s.busy = true; s.error = null; renderSheet();
-    try {
-      if (newPassword.length < 6) throw {userMessage:'Новый пароль должен быть не короче 6 символов.'};
-      const check = await sb.auth.signInWithPassword({email:store.email, password:oldPassword});
-      if (check.error) throw {userMessage:check.error.code === 'invalid_credentials' || /Invalid login/i.test(check.error.message) ? 'Старый пароль указан неверно.' : errText(check.error, 'Не удалось проверить старый пароль.')};
-      const {error} = await sb.auth.updateUser({password:newPassword});
-      if (error) throw error.code === 'same_password' ? {userMessage:'Новый пароль совпадает со старым.'} : error;
-      closeSheet(); showToast('Пароль изменён');
-    }
-    catch (err) { s.busy = false; s.error = errText(err, 'Не удалось сменить пароль.'); renderSheet(); }
   }
 });
 
